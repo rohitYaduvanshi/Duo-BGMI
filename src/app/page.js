@@ -339,15 +339,15 @@ export default function Home() {
           <div className="podium-figure p2">
             <div className="player">
               <svg viewBox="0 0 100 100" width="100%" height="100%">
-                <circle cx="50" cy="26" r="14" fill="#0d1524" stroke="#c7d3dd" stroke-width="2.5" />
-                <path d="M50 8 L50 2 M42 6 L46 10 M58 6 L54 10" stroke="#c7d3dd" stroke-width="2.5" stroke-linecap="round" />
-                <path d="M28 90 C28 60 34 44 50 44 C66 44 72 60 72 90" fill="#101a2c" stroke="#c7d3dd" stroke-width="2.5" />
-                <path d="M50 44 L50 66" stroke="#c7d3dd" stroke-width="2.5" />
-                <path d="M50 50 C36 50 28 40 24 30" stroke="#c7d3dd" stroke-width="3" fill="none" stroke-linecap="round" />
+                <circle cx="50" cy="26" r="14" fill="#0d1524" stroke="#c7d3dd" strokeWidth="2.5" />
+                <path d="M50 8 L50 2 M42 6 L46 10 M58 6 L54 10" stroke="#c7d3dd" strokeWidth="2.5" strokeLinecap="round" />
+                <path d="M28 90 C28 60 34 44 50 44 C66 44 72 60 72 90" fill="#101a2c" stroke="#c7d3dd" strokeWidth="2.5" />
+                <path d="M50 44 L50 66" stroke="#c7d3dd" strokeWidth="2.5" />
+                <path d="M50 50 C36 50 28 40 24 30" stroke="#c7d3dd" strokeWidth="3" fill="none" strokeLinecap="round" />
                 <g transform="translate(14,12)">
-                  <path d="M0 0 h20 v10 a10 10 0 0 1 -20 0 z" fill="none" stroke="#c7d3dd" stroke-width="2" />
-                  <path d="M0 2 c-6 0 -6 10 0 10" fill="none" stroke="#c7d3dd" stroke-width="2" />
-                  <path d="M20 2 c6 0 6 10 0 10" fill="none" stroke="#c7d3dd" stroke-width="2" />
+                  <path d="M0 0 h20 v10 a10 10 0 0 1 -20 0 z" fill="none" stroke="#c7d3dd" strokeWidth="2" />
+                  <path d="M0 2 c-6 0 -6 10 0 10" fill="none" stroke="#c7d3dd" strokeWidth="2" />
+                  <path d="M20 2 c6 0 6 10 0 10" fill="none" stroke="#c7d3dd" strokeWidth="2" />
                   <rect x="8" y="20" width="4" height="6" fill="#c7d3dd" />
                   <rect x="4" y="26" width="12" height="3" fill="#c7d3dd" />
                 </g>
@@ -364,15 +364,15 @@ export default function Home() {
           <div className="podium-figure p1">
             <div className="player">
               <svg viewBox="0 0 100 100" width="100%" height="100%">
-                <circle cx="50" cy="24" r="15" fill="#0d1524" stroke="#ffcb47" stroke-width="3" />
-                <path d="M50 6 L50 -1 M40 4 L45 9 M60 4 L55 9" stroke="#ffcb47" stroke-width="2.5" stroke-linecap="round" />
-                <path d="M26 92 C26 58 33 42 50 42 C67 42 74 58 74 92" fill="#101a2c" stroke="#ffcb47" stroke-width="3" />
-                <path d="M50 42 L50 66" stroke="#ffcb47" stroke-width="3" />
-                <path d="M50 48 C34 48 24 36 20 24" stroke="#ffcb47" stroke-width="3.5" fill="none" stroke-linecap="round" />
+                <circle cx="50" cy="24" r="15" fill="#0d1524" stroke="#ffcb47" strokeWidth="3" />
+                <path d="M50 6 L50 -1 M40 4 L45 9 M60 4 L55 9" stroke="#ffcb47" strokeWidth="2.5" strokeLinecap="round" />
+                <path d="M26 92 C26 58 33 42 50 42 C67 42 74 58 74 92" fill="#101a2c" stroke="#ffcb47" strokeWidth="3" />
+                <path d="M50 42 L50 66" stroke="#ffcb47" strokeWidth="3" />
+                <path d="M50 48 C34 48 24 36 20 24" stroke="#ffcb47" strokeWidth="3.5" fill="none" strokeLinecap="round" />
                 <g transform="translate(8,6)">
-                  <path d="M0 0 h24 v12 a12 12 0 0 1 -24 0 z" fill="none" stroke="#ffcb47" stroke-width="2.5" />
-                  <path d="M0 2 c-7 0 -7 12 0 12" fill="none" stroke="#ffcb47" stroke-width="2.5" />
-                  <path d="M24 2 c7 0 7 12 0 12" fill="none" stroke="#ffcb47" stroke-width="2.5" />
+                  <path d="M0 0 h24 v12 a12 12 0 0 1 -24 0 z" fill="none" stroke="#ffcb47" strokeWidth="2.5" />
+                  <path d="M0 2 c-7 0 -7 12 0 12" fill="none" stroke="#ffcb47" strokeWidth="2.5" />
+                  <path d="M24 2 c7 0 7 12 0 12" fill="none" stroke="#ffcb47" strokeWidth="2.5" />
                   <rect x="10" y="24" width="4" height="7" fill="#ffcb47" />
                   <rect x="5" y="31" width="14" height="3.5" fill="#ffcb47" />
                 </g>
@@ -389,13 +389,13 @@ export default function Home() {
           <div className="podium-figure p3">
             <div className="player">
               <svg viewBox="0 0 100 100" width="100%" height="100%">
-                <circle cx="50" cy="28" r="13" fill="#0d1524" stroke="#e2a45c" stroke-width="2.5" />
-                <path d="M50 10 L50 4 M43 8 L47 12 M57 8 L53 12" stroke="#e2a45c" stroke-width="2.5" stroke-linecap="round" />
-                <path d="M30 88 C30 62 35 46 50 46 C65 46 70 62 70 88" fill="#101a2c" stroke="#e2a45c" stroke-width="2.5" />
+                <circle cx="50" cy="28" r="13" fill="#0d1524" stroke="#e2a45c" strokeWidth="2.5" />
+                <path d="M50 10 L50 4 M43 8 L47 12 M57 8 L53 12" stroke="#e2a45c" strokeWidth="2.5" strokeLinecap="round" />
+                <path d="M30 88 C30 62 35 46 50 46 C65 46 70 62 70 88" fill="#101a2c" stroke="#e2a45c" strokeWidth="2.5" />
                 <path d="M50 46 L50 66" stroke="#e2a45c" stroke-width="2.5" />
-                <path d="M50 52 C38 52 30 42 26 32" stroke="#e2a45c" stroke-width="3" fill="none" stroke-linecap="round" />
+                <path d="M50 52 C38 52 30 42 26 32" stroke="#e2a45c" strokeWidth="3" fill="none" strokeLinecap="round" />
                 <g transform="translate(16,16)">
-                  <path d="M0 0 h18 v9 a9 9 0 0 1 -18 0 z" fill="none" stroke="#e2a45c" stroke-width="2" />
+                  <path d="M0 0 h18 v9 a9 9 0 0 1 -18 0 z" fill="none" stroke="#e2a45c" strokeWidth="2" />
                   <path d="M0 2 c-5 0 -5 9 0 9" fill="none" stroke="#e2a45c" stroke-width="2" />
                   <path d="M18 2 c5 0 5 9 0 9" fill="none" stroke="#e2a45c" stroke-width="2" />
                   <rect x="7" y="18" width="4" height="5" fill="#e2a45c" />
