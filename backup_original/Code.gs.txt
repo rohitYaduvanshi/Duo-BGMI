@@ -1,28 +1,34 @@
 /**
- * DS CLAN — BGMI Duo Tournament Registration Backend
- * Deploy this as a Google Apps Script Web App bound to a Google Sheet.
+ * DS CLAN — BGMI Duo Tournament Registration Backend (v2)
+ * ─────────────────────────────────────────────────────────
+ * WHAT'S NEW IN v2:
+ *  - Payment screenshots are uploaded to Google Drive automatically
+ *  - A shareable Drive link is saved in the "Screenshot" column
  *
- * SETUP:
- * 1. Go to sheets.google.com → create a new spreadsheet (e.g. "DS Clan Registrations").
- * 2. Rename the first tab to exactly:  Teams
- * 3. In row 1, add these headers (one per column):
- *    Team Name | Player1 Name | Player1 UID | Player2 Name | Player2 UID | WhatsApp | UTR | Timestamp
- * 4. In the sheet, go to Extensions → Apps Script.
- * 5. Delete any starter code, paste this whole file in, and save.
- * 6. Click Deploy → New deployment → type: Web app.
- *      - Execute as: Me
- *      - Who has access: Anyone
- * 7. Click Deploy, authorize the permissions it asks for.
- * 8. Copy the "Web app URL" it gives you.
- * 9. Paste that URL into index.html, replacing:
- *      const SHEET_API_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+ * SHEET HEADERS (Row 1):
+ *   A: Team Name
+ *   B: Player1 Name
+ *   C: Player1 UID
+ *   D: Player2 Name
+ *   E: Player2 UID
+ *   F: WhatsApp
+ *   G: UTR
+ *   H: Tournament
+ *   I: Screenshot Link
+ *   J: Timestamp
  *
- * Every time you edit this script, you must create a NEW deployment
- * (or use "Manage deployments" → edit → New version) for changes to go live.
+ * DEPLOY STEPS:
+ *  1. Go to your Google Sheet → Extensions → Apps Script
+ *  2. Paste this entire file, replacing all existing code
+ *  3. Click Deploy → New deployment → Web app
+ *     - Execute as: Me
+ *     - Who has access: Anyone
+ *  4. Copy the Web app URL and paste in .env.local
  */
 
 const SHEET_NAME = "Teams";
 
+// ── GET: Fetch registered team names ──────────────────────────────────
 function doGet(e) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
   const data = sheet.getDataRange().getValues();
@@ -36,25 +42,55 @@ function doGet(e) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
+// ── POST: Register team + upload screenshot to Drive ──────────────────
 function doPost(e) {
   try {
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
     const body = JSON.parse(e.postData.contents);
 
+    // ── Screenshot Upload ────────────────────────────────────────────
+    let screenshotUrl = "";
+
+    if (body.screenshotBase64 && body.screenshotBase64.length > 0) {
+      try {
+        // Strip the data-URL prefix if present: "data:image/jpeg;base64,..."
+        const raw = body.screenshotBase64;
+        const base64Only = raw.includes(",") ? raw.split(",")[1] : raw;
+        const mimeType   = body.screenshotMime || "image/jpeg";
+        const ext        = mimeType.split("/")[1] || "jpg";
+        const fileName   = "payment_" + (body.teamName || "team").replace(/\s+/g, "_") + "_" + Date.now() + "." + ext;
+
+        const decoded  = Utilities.base64Decode(base64Only);
+        const blob     = Utilities.newBlob(decoded, mimeType, fileName);
+
+        // Save to Drive root (you can change to a specific folder if needed)
+        const file = DriveApp.createFile(blob);
+        file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+        screenshotUrl = file.getUrl();
+      } catch (driveErr) {
+        // If Drive upload fails, continue without screenshot
+        screenshotUrl = "Upload failed: " + String(driveErr).slice(0, 80);
+      }
+    }
+
+    // ── Append Row to Sheet ──────────────────────────────────────────
     sheet.appendRow([
-      body.teamName || "",
-      body.p1Name || "",
-      body.p1Uid || "",
-      body.p2Name || "",
-      body.p2Uid || "",
-      body.whatsapp || "",
-      body.utr || "",
-      body.timestamp || new Date().toISOString()
+      body.teamName  || "",
+      body.p1Name    || "",
+      body.p1Uid     || "",
+      body.p2Name    || "",
+      body.p2Uid     || "",
+      body.whatsapp  || "",
+      body.utr       || "",
+      body.tournament || "",
+      screenshotUrl,
+      body.timestamp  || new Date().toISOString(),
     ]);
 
     return ContentService
-      .createTextOutput(JSON.stringify({ status: "ok" }))
+      .createTextOutput(JSON.stringify({ status: "ok", screenshot: screenshotUrl }))
       .setMimeType(ContentService.MimeType.JSON);
+
   } catch (err) {
     return ContentService
       .createTextOutput(JSON.stringify({ status: "error", message: String(err) }))
