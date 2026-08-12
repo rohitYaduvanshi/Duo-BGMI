@@ -62,17 +62,16 @@ export default function Home() {
     setConfettiParticles(particles);
   }, []);
 
-  // ── Fetch registered teams ─────────────────────────────────────────
+  // ── Fetch registered teams via local API proxy (avoids CORS) ──────
   useEffect(() => {
-    if (!isBackendConfigured) { setLoadingTeams(false); return; }
-    fetch(`${sheetApiUrl}?t=${Date.now()}`)
+    fetch(`/api/teams?t=${Date.now()}`)
       .then((r) => r.json())
       .then((data) => {
         if (data.teams) setRegisteredTeams(data.teams);
       })
       .catch(() => {})
       .finally(() => setLoadingTeams(false));
-  }, [sheetApiUrl, isBackendConfigured]);
+  }, []);
 
   // ── Screenshot file handler ────────────────────────────────────────
   const handleFile = (file) => {
