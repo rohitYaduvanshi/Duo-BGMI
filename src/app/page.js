@@ -7,7 +7,7 @@ import { videos } from "../data/videos";
 
 export default function Home() {
   // Config
-  const sheetApiUrl = process.env.NEXT_PUBLIC_SHEET_API_URL || "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+  const sheetApiUrl = process.env.NEXT_PUBLIC_SHEET_API_URL || "https://script.google.com/macros/s/AKfycbz0fAscS53oJBZVF9oTX3w35vzpjwERBVHOz853iU4C5b5Kl6OOOJC1hlr_JyM0NHm6/exec";
   const isBackendConfigured = sheetApiUrl && !sheetApiUrl.includes("PASTE_YOUR");
 
   // State
