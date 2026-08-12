@@ -5,6 +5,11 @@ export const metadata = {
   description: "Official registration and tracking portal for DS Clan BGMI Duo tournaments. Book your slots, see live registered teams, prize pools, match timings, winners, and stream highlights.",
   keywords: ["BGMI", "Tournament", "DS Clan", "Duo Tournament", "Esports", "Slot Booking", "Register"],
   authors: [{ name: "DS Clan Admin" }],
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
 };
 
 export const viewport = {
