@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DS CLAN — BGMI DUO TOURNAMENT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Teko:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#05070d;
+    --deep:#0a0f1c;
+    --panel:#0d1524;
+    --panel-2:#101a2c;
+    --line: rgba(57,255,227,0.18);
+    --cyan:#39ffe3;
+    --cyan-dim: rgba(57,255,227,0.5);
+    --magenta:#ff3d81;
+    --gold:#ffcb47;
+    --gold-dim: rgba(255,203,71,0.35);
+    --ink:#dce7f0;
+    --ink-dim:#7f93a8;
+    --danger:#ff5252;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--void);
+    color:var(--ink);
+    font-family:'Rajdhani',sans-serif;
+    overflow-x:hidden;
+    position:relative;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
+  /* ---------- ambient background ---------- */
+  .grid-bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(57,255,227,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(57,255,227,0.05) 1px, transparent 1px);
+    background-size:42px 42px;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 20%, black 40%, transparent 100%);
+  }
+  .noise-vig{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:radial-gradient(ellipse 120% 80% at 50% -10%, rgba(57,255,227,0.08), transparent 60%),
+               radial-gradient(ellipse 100% 60% at 90% 100%, rgba(255,61,129,0.08), transparent 60%);
+  }
+  .scanline{
+    position:fixed; left:0; right:0; height:2px; z-index:1; pointer-events:none;
+    background:linear-gradient(90deg, transparent, var(--cyan), transparent);
+    opacity:0.35; filter:blur(0.5px);
+    animation:scan 7s linear infinite;
+  }
+  @keyframes scan{ 0%{top:-2%;} 100%{top:102%;} }
+
+  section{ position:relative; z-index:2; }
+
+  /* ---------- top marquee ---------- */
+  .marquee-wrap{
+    width:100%; overflow:hidden; background:var(--panel);
+    border-bottom:1px solid var(--line);
+    padding:7px 0;
+  }
+  .marquee{
+    display:flex; white-space:nowrap;
+    animation:marquee 18s linear infinite;
+    font-family:'Teko',sans-serif; font-size:15px; letter-spacing:3px;
+    color:var(--cyan); text-transform:uppercase;
+  }
+  .marquee span{ padding:0 22px; opacity:0.85;}
+  .marquee span::after{content:"◆"; margin-left:22px; color:var(--magenta); opacity:0.7;}
+  @keyframes marquee{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+
+  /* ---------- hero ---------- */
+  .hero{
+    min-height:100svh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center;
+    padding:70px 20px 60px;
+    position:relative;
+  }
+  .radar{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-52%);
+    width:min(640px,140vw); height:min(640px,140vw);
+    border-radius:50%;
+    border:1px solid var(--line);
+    opacity:0.5; z-index:0;
+  }
+  .radar::before, .radar::after{
+    content:""; position:absolute; inset:60px; border-radius:50%; border:1px solid var(--line);
+  }
+  .radar::after{ inset:130px; }
+  .radar-sweep{
+    position:absolute; top:50%; left:50%; width:50%; height:2px; transform-origin:left center;
+    background:linear-gradient(90deg, var(--cyan), transparent);
+    animation:sweep 4s linear infinite; opacity:0.55; z-index:0;
+    filter: drop-shadow(0 0 6px var(--cyan));
+  }
+  @keyframes sweep{ from{transform:translate(0,-50%) rotate(0deg);} to{transform:translate(0,-50%) rotate(360deg);} }
+
+  .clan-badge{
+    width:92px; height:92px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    border:2px solid var(--cyan);
+    box-shadow:0 0 24px var(--cyan-dim), inset 0 0 18px rgba(57,255,227,0.15);
+    font-family:'Orbitron',sans-serif; font-weight:900; font-size:28px; color:var(--cyan);
+    margin-bottom:22px; position:relative; z-index:2;
+    background:radial-gradient(circle at 30% 30%, rgba(57,255,227,0.12), transparent 70%);
+    animation:pulseBadge 3s ease-in-out infinite;
+  }
+  @keyframes pulseBadge{ 0%,100%{box-shadow:0 0 18px var(--cyan-dim), inset 0 0 14px rgba(57,255,227,0.12);} 50%{box-shadow:0 0 34px var(--cyan), inset 0 0 22px rgba(57,255,227,0.25);} }
+
+  .eyebrow{
+    font-family:'Teko',sans-serif; letter-spacing:6px; font-size:15px;
+    color:var(--ink-dim); text-transform:uppercase; z-index:2; position:relative;
+    margin-bottom:10px;
+  }
+  .eyebrow b{ color:var(--magenta); font-weight:600; }
+
+  .title{
+    font-family:'Orbitron',sans-serif; font-weight:900;
+    font-size:clamp(38px, 10vw, 84px);
+    line-height:0.98; letter-spacing:1px; z-index:2; position:relative;
+    text-transform:uppercase;
+  }
+  .title .duo{
+    color:var(--void);
+    -webkit-text-stroke:1.5px var(--cyan);
+    text-stroke:1.5px var(--cyan);
+  }
+  .title .glow{
+    color:var(--cyan);
+    text-shadow:0 0 18px var(--cyan-dim), 0 0 46px rgba(57,255,227,0.35);
+  }
+  .subtitle{
+    font-family:'Teko',sans-serif; font-weight:600; font-size:clamp(20px,4vw,30px);
+    letter-spacing:3px; text-transform:uppercase; margin-top:6px; z-index:2; position:relative;
+    color:var(--ink);
+  }
+  .subtitle .day{ color:var(--magenta); }
+
+  .tagline{
+    max-width:520px; margin:22px auto 0; color:var(--ink-dim);
+    font-size:17px; line-height:1.6; z-index:2; position:relative;
+  }
+  .tagline b{ color:var(--ink); }
+
+  .cta-row{
+    margin-top:34px; display:flex; gap:16px; flex-wrap:wrap; justify-content:center;
+    z-index:2; position:relative;
+  }
+  .btn{
+    font-family:'Teko',sans-serif; letter-spacing:2px; font-size:19px;
+    text-transform:uppercase; text-decoration:none;
+    padding:14px 30px; border-radius:3px; font-weight:600;
+    display:inline-flex; align-items:center; gap:8px;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary{
+    background:var(--cyan); color:#04150f;
+    box-shadow:0 0 26px var(--cyan-dim);
+    clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+  }
+  .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 0 34px var(--cyan); }
+  .btn-ghost{
+    border:1px solid var(--line); color:var(--ink);
+    clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+  }
+  .btn-ghost:hover{ border-color:var(--cyan); color:var(--cyan); transform:translateY(-2px); }
+
+  .scrolldown{
+    margin-top:52px; font-family:'Teko',sans-serif; letter-spacing:3px; font-size:13px;
+    color:var(--ink-dim); z-index:2; position:relative; text-transform:uppercase;
+  }
+  .scrolldown span{ display:block; margin-top:8px; animation:bob 1.6s ease-in-out infinite; }
+  @keyframes bob{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(6px);} }
+
+  /* ---------- section shell ---------- */
+  .section-head{ text-align:center; margin-bottom:38px; }
+  .section-tag{
+    font-family:'Teko',sans-serif; letter-spacing:5px; font-size:14px; color:var(--magenta);
+    text-transform:uppercase; margin-bottom:6px;
+  }
+  .section-title{
+    font-family:'Orbitron',sans-serif; font-weight:800; font-size:clamp(26px,5vw,42px);
+    text-transform:uppercase; color:var(--ink);
+  }
+  .container{ max-width:1080px; margin:0 auto; padding:90px 20px; }
+  .hairline{
+    height:1px; max-width:1080px; margin:0 auto;
+    background:linear-gradient(90deg, transparent, var(--line), transparent);
+  }
+
+  /* ---------- info cards ---------- */
+  .info-grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+    gap:18px;
+  }
+  .info-card{
+    background:linear-gradient(160deg, var(--panel), var(--panel-2));
+    border:1px solid var(--line); border-radius:6px; padding:22px 20px;
+    position:relative; overflow:hidden;
+    transition:transform .2s ease, border-color .2s ease;
+  }
+  .info-card::before{
+    content:""; position:absolute; top:0; left:0; width:100%; height:2px;
+    background:linear-gradient(90deg, var(--cyan), transparent);
+  }
+  .info-card:hover{ transform:translateY(-4px); border-color:var(--cyan-dim); }
+  .info-card .lbl{
+    font-family:'Teko',sans-serif; letter-spacing:2.5px; font-size:13px; color:var(--ink-dim);
+    text-transform:uppercase; margin-bottom:8px;
+  }
+  .info-card .val{
+    font-family:'Orbitron',sans-serif; font-weight:700; font-size:22px; color:var(--cyan);
+    line-height:1.25;
+  }
+  .info-card.fee .val{ color:var(--gold); }
+  .info-card .val small{ display:block; font-family:'Rajdhani',sans-serif; font-weight:500; font-size:13px; color:var(--ink-dim); margin-top:4px; }
+
+  /* ---------- prize podium ---------- */
+  .prize-stage{
+    position:relative;
+    display:flex; align-items:flex-end; justify-content:center; gap:0;
+    padding-top:60px; margin-top:10px;
+  }
+  .confetti{ position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0; }
+  .confetti i{
+    position:absolute; top:-10%; width:6px; height:12px; opacity:0.8;
+    animation:fall linear infinite;
+  }
+  @keyframes fall{ to{ transform:translateY(120vh) rotate(360deg); opacity:0.2; } }
+
+  .podium-figure{
+    display:flex; flex-direction:column; align-items:center; position:relative; z-index:2;
+    width:33%;
+  }
+  .player{
+    width:76px; height:76px; margin-bottom:6px; position:relative;
+    animation:floaty 3.4s ease-in-out infinite;
+  }
+  .podium-figure.p1 .player{ width:96px; height:96px; animation-delay:.1s; }
+  .podium-figure.p3 .player{ animation-delay:.5s; }
+  @keyframes floaty{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-8px);} }
+
+  .trophy-amt{
+    font-family:'Orbitron',sans-serif; font-weight:800; color:var(--gold);
+    font-size:clamp(20px,4vw,30px); margin-top:10px; text-shadow:0 0 16px var(--gold-dim);
+  }
+  .rank-badge{
+    font-family:'Teko',sans-serif; letter-spacing:2px; font-size:14px; color:var(--ink-dim);
+    text-transform:uppercase; margin-top:2px;
+  }
+  .podium-bar{
+    width:88%; border-radius:6px 6px 0 0;
+    border:1px solid var(--line); border-bottom:none;
+    background:linear-gradient(180deg, var(--panel-2), var(--panel));
+    display:flex; align-items:flex-start; justify-content:center; padding-top:10px;
+    position:relative; overflow:hidden;
+  }
+  .podium-bar::after{
+    content:""; position:absolute; top:0; left:0; right:0; height:2px;
+  }
+  .podium-figure.p1 .podium-bar{ height:150px; }
+  .podium-figure.p2 .podium-bar{ height:112px; }
+  .podium-figure.p3 .podium-bar{ height:82px; }
+  .podium-figure.p1 .podium-bar::after{ background:var(--gold); box-shadow:0 0 12px var(--gold); }
+  .podium-figure.p2 .podium-bar::after{ background:#c7d3dd; box-shadow:0 0 10px rgba(199,211,221,.6); }
+  .podium-figure.p3 .podium-bar::after{ background:#e2a45c; box-shadow:0 0 10px rgba(226,164,92,.6); }
+  .podium-num{
+    font-family:'Orbitron',sans-serif; font-weight:900; font-size:34px; color:var(--ink-dim); opacity:.35;
+  }
+
+  .prize-total{
+    text-align:center; margin-top:34px; font-family:'Teko',sans-serif; letter-spacing:2px;
+    color:var(--ink-dim); font-size:16px; text-transform:uppercase;
+  }
+  .prize-total b{ color:var(--cyan); font-size:20px; }
+
+  /* ---------- points table ---------- */
+  .points-wrap{
+    background:linear-gradient(160deg, var(--panel), var(--panel-2));
+    border:1px solid var(--line); border-radius:8px; overflow:hidden;
+  }
+  table.points{ width:100%; border-collapse:collapse; }
+  table.points th, table.points td{
+    padding:16px 18px; text-align:center; font-family:'Rajdhani',sans-serif; font-size:17px;
+  }
+  table.points thead th{
+    font-family:'Teko',sans-serif; letter-spacing:2px; font-size:14px; color:var(--void);
+    background:var(--cyan); text-transform:uppercase;
+  }
+  table.points tbody tr:nth-child(odd){ background:rgba(255,255,255,0.02); }
+  table.points tbody tr:hover{ background:rgba(57,255,227,0.06); }
+  table.points td.rank{ font-family:'Orbitron',sans-serif; font-weight:700; color:var(--gold); }
+  table.points td.pts{ color:var(--cyan); font-weight:700; }
+  .points-note{
+    padding:14px 18px; font-size:14px; color:var(--ink-dim); border-top:1px solid var(--line);
+  }
+
+  /* ---------- match schedule ---------- */
+  .match-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
+  .match-card{
+    border:1px solid var(--line); border-radius:8px; padding:26px;
+    background:linear-gradient(160deg, var(--panel), var(--panel-2));
+    position:relative;
+  }
+  .match-card .match-tag{
+    font-family:'Teko',sans-serif; letter-spacing:3px; font-size:13px; color:var(--magenta);
+    text-transform:uppercase; margin-bottom:10px;
+  }
+  .match-card h3{
+    font-family:'Orbitron',sans-serif; font-size:24px; color:var(--ink); margin-bottom:14px;
+  }
+  .match-meta{ display:flex; flex-direction:column; gap:8px; }
+  .match-meta div{ display:flex; justify-content:space-between; font-size:15px; color:var(--ink-dim); border-bottom:1px dashed var(--line); padding-bottom:8px; }
+  .match-meta div b{ color:var(--ink); font-weight:600; }
+
+  /* ---------- rules ---------- */
+  .rules-list{ counter-reset:rule; display:flex; flex-direction:column; gap:0; }
+  .rule-item{
+    counter-increment:rule; display:flex; gap:18px; padding:18px 4px; border-bottom:1px solid var(--line);
+  }
+  .rule-item:last-child{ border-bottom:none; }
+  .rule-item::before{
+    content:counter(rule,decimal-leading-zero); font-family:'Orbitron',sans-serif; font-weight:800;
+    color:var(--cyan); font-size:15px; flex:0 0 auto; opacity:.8; padding-top:2px;
+  }
+  .rule-item p{ font-size:16px; line-height:1.55; color:var(--ink-dim); }
+  .rule-item p b{ color:var(--ink); font-weight:600; }
+
+  /* ---------- registration / contact ---------- */
+  .reg-panel{
+    text-align:center; border:1px solid var(--line); border-radius:10px;
+    padding:52px 26px; position:relative; overflow:hidden;
+    background:radial-gradient(ellipse 120% 100% at 50% 0%, rgba(57,255,227,0.08), transparent 60%);
+  }
+  .reg-panel h2{
+    font-family:'Orbitron',sans-serif; font-weight:800; font-size:clamp(24px,5vw,36px);
+    color:var(--ink); text-transform:uppercase; margin-bottom:12px;
+  }
+  .reg-panel p{ color:var(--ink-dim); max-width:460px; margin:0 auto 26px; font-size:16px; }
+  .contact-num{
+    display:inline-flex; align-items:center; gap:10px; font-family:'Orbitron',sans-serif;
+    font-size:clamp(20px,4vw,28px); color:var(--gold); text-decoration:none; font-weight:700;
+    letter-spacing:1px; padding:14px 26px; border:1px solid var(--gold-dim); border-radius:4px;
+    transition:all .2s ease;
+  }
+  .contact-num:hover{ box-shadow:0 0 22px var(--gold-dim); transform:translateY(-2px); }
+  .slots-left{ margin-top:22px; font-family:'Teko',sans-serif; letter-spacing:2px; font-size:15px; color:var(--ink-dim); text-transform:uppercase;}
+  .slots-left b{ color:var(--magenta); }
+
+  /* ---------- pay & register form ---------- */
+  .reg-flow{
+    display:grid; grid-template-columns:1fr 1.3fr; gap:26px;
+    text-align:left; align-items:stretch;
+  }
+  .pay-card{
+    border:1px solid var(--line); border-radius:10px; padding:28px 22px;
+    background:linear-gradient(160deg, var(--panel), var(--panel-2));
+    text-align:center;
+  }
+  .pay-card .lbl{
+    font-family:'Teko',sans-serif; letter-spacing:2.5px; font-size:13px; color:var(--ink-dim);
+    text-transform:uppercase; margin-bottom:14px;
+  }
+  .pay-card img{
+    width:100%; max-width:220px; border-radius:8px; border:1px solid var(--line);
+    display:block; margin:0 auto;
+  }
+  .pay-card .payee{
+    margin-top:14px; font-family:'Orbitron',sans-serif; font-size:15px; color:var(--cyan); letter-spacing:1px;
+  }
+  .pay-card .fee-note{ margin-top:10px; color:var(--gold); font-family:'Teko',sans-serif; letter-spacing:2px; font-size:16px; }
+
+  .form-card{
+    border:1px solid var(--line); border-radius:10px; padding:28px 24px;
+    background:linear-gradient(160deg, var(--panel), var(--panel-2));
+  }
+  .form-card h3{
+    font-family:'Orbitron',sans-serif; font-size:19px; color:var(--ink); margin-bottom:18px; text-transform:uppercase;
+  }
+  .reg-form{ display:flex; flex-direction:column; gap:14px; }
+  .reg-form label{
+    font-family:'Teko',sans-serif; letter-spacing:1.5px; font-size:14px; color:var(--ink-dim);
+    text-transform:uppercase; margin-bottom:5px; display:block;
+  }
+  .reg-form input{
+    width:100%; background:var(--void); border:1px solid var(--line); border-radius:5px;
+    padding:11px 13px; color:var(--ink); font-family:'Rajdhani',sans-serif; font-size:15px;
+    outline:none; transition:border-color .15s ease;
+  }
+  .reg-form input:focus{ border-color:var(--cyan); }
+  .reg-form .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .reg-form .submit-btn{
+    margin-top:6px; border:none; cursor:pointer; font-family:'Teko',sans-serif; letter-spacing:2px;
+    font-size:19px; text-transform:uppercase; padding:14px; border-radius:3px; font-weight:600;
+    background:var(--cyan); color:#04150f; box-shadow:0 0 26px var(--cyan-dim);
+    clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .reg-form .submit-btn:hover{ transform:translateY(-2px); box-shadow:0 0 34px var(--cyan); }
+  .reg-form .submit-btn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
+  .form-msg{
+    margin-top:12px; font-family:'Teko',sans-serif; letter-spacing:1.5px; font-size:14px;
+    text-transform:uppercase; display:none;
+  }
+  .form-msg.ok{ color:var(--cyan); display:block; }
+  .form-msg.err{ color:var(--danger); display:block; }
+
+  @media (max-width:780px){
+    .reg-flow{ grid-template-columns:1fr; }
+  }
+
+  /* ---------- teams list ---------- */
+  .teams-wrap{
+    border:1px solid var(--line); border-radius:10px;
+    background:linear-gradient(160deg, var(--panel), var(--panel-2));
+    padding:8px;
+  }
+  .teams-list{ display:flex; flex-direction:column; }
+  .team-row{
+    display:flex; align-items:center; gap:14px; padding:14px 16px;
+    border-bottom:1px solid var(--line);
+  }
+  .team-row:last-child{ border-bottom:none; }
+  .team-row .team-slot{
+    font-family:'Orbitron',sans-serif; font-weight:800; color:var(--cyan); font-size:14px;
+    width:30px; flex:0 0 auto; opacity:.85;
+  }
+  .team-row .team-name{
+    font-family:'Rajdhani',sans-serif; font-weight:700; font-size:17px; color:var(--ink);
+    text-transform:uppercase; letter-spacing:.5px;
+  }
+  .teams-empty, .teams-loading{
+    padding:26px 16px; text-align:center; color:var(--ink-dim); font-family:'Teko',sans-serif;
+    letter-spacing:1.5px; text-transform:uppercase; font-size:15px;
+  }
+  .teams-count{
+    text-align:center; margin-top:16px; font-family:'Teko',sans-serif; letter-spacing:2px;
+    color:var(--ink-dim); font-size:15px; text-transform:uppercase;
+  }
+  .teams-count b{ color:var(--magenta); }
+
+  footer{
+    text-align:center; padding:40px 20px 50px; border-top:1px solid var(--line);
+    color:var(--ink-dim); font-size:13px; font-family:'Teko',sans-serif; letter-spacing:2px;
+    text-transform:uppercase;
+  }
+  footer .clan-name{ color:var(--cyan); }
+
+  @media (max-width:640px){
+    .container{ padding:70px 16px; }
+    .prize-stage{ align-items:flex-end; }
+    .podium-figure.p1{ order:2; }
+    .podium-figure.p2{ order:1; }
+    .podium-figure.p3{ order:3; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="grid-bg"></div>
+  <div class="noise-vig"></div>
+  <div class="scanline"></div>
+
+  <div class="marquee-wrap">
+    <div class="marquee" id="marquee"></div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="radar"><div class="radar-sweep"></div></div>
+    <div class="clan-badge">DS</div>
+    <div class="eyebrow">DS Clan Presents <b>·</b> Mobile Battle Royale</div>
+    <h1 class="title">BGMI <span class="duo">DUO</span><br><span class="glow">TOURNAMENT</span></h1>
+    <div class="subtitle">Tournament <span class="day">Day</span> · 12 August</div>
+    <p class="tagline">Drop in with your duo. <b>2 intense matches</b>, one map — <b>Erangel</b> — and one squad walks away champions. Limited to <b>20 teams</b>. Book your slot before the lobby fills.</p>
+    <div class="cta-row">
+      <a href="#register" class="btn btn-primary">Register Now →</a>
+      <a href="#rules" class="btn btn-ghost">Read Rules</a>
+    </div>
+    <div class="scrolldown">Scroll<span>▾</span></div>
+  </section>
+
+  <div class="hairline"></div>
+
+  <!-- INFO -->
+  <section class="container">
+    <div class="section-head">
+      <div class="section-tag">Mission Brief</div>
+      <div class="section-title">Tournament Info</div>
+    </div>
+    <div class="info-grid">
+      <div class="info-card"><div class="lbl">Date</div><div class="val">12 AUG</div></div>
+      <div class="info-card"><div class="lbl">Timing</div><div class="val">8:00 PM<small>Onwards · Both Matches</small></div></div>
+      <div class="info-card"><div class="lbl">Mode</div><div class="val">DUO</div></div>
+      <div class="info-card"><div class="lbl">Map</div><div class="val">ERANGEL</div></div>
+      <div class="info-card"><div class="lbl">Slots</div><div class="val">20 <small>Teams</small></div></div>
+      <div class="info-card fee"><div class="lbl">Entry Fee</div><div class="val">₹40 <small>Per Team</small></div></div>
+    </div>
+  </section>
+
+  <div class="hairline"></div>
+
+  <!-- PRIZE -->
+  <section class="container">
+    <div class="section-head">
+      <div class="section-tag">Reward Pool</div>
+      <div class="section-title">Prize Distribution</div>
+    </div>
+
+    <div class="prize-stage">
+      <div class="confetti" id="confetti"></div>
+
+      <div class="podium-figure p2">
+        <div class="player">
+          <svg viewBox="0 0 100 100" width="100%" height="100%">
+            <circle cx="50" cy="26" r="14" fill="#0d1524" stroke="#c7d3dd" stroke-width="2.5"/>
+            <path d="M50 8 L50 2 M42 6 L46 10 M58 6 L54 10" stroke="#c7d3dd" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M28 90 C28 60 34 44 50 44 C66 44 72 60 72 90" fill="#101a2c" stroke="#c7d3dd" stroke-width="2.5"/>
+            <path d="M50 44 L50 66" stroke="#c7d3dd" stroke-width="2.5"/>
+            <path d="M50 50 C36 50 28 40 24 30" stroke="#c7d3dd" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <g transform="translate(14,12)">
+              <path d="M0 0 h20 v10 a10 10 0 0 1 -20 0 z" fill="none" stroke="#c7d3dd" stroke-width="2"/>
+              <path d="M0 2 c-6 0 -6 10 0 10" fill="none" stroke="#c7d3dd" stroke-width="2"/>
+              <path d="M20 2 c6 0 6 10 0 10" fill="none" stroke="#c7d3dd" stroke-width="2"/>
+              <rect x="8" y="20" width="4" height="6" fill="#c7d3dd"/>
+              <rect x="4" y="26" width="12" height="3" fill="#c7d3dd"/>
+            </g>
+          </svg>
+        </div>
+        <div class="trophy-amt">₹250</div>
+        <div class="rank-badge">2nd Place</div>
+        <div class="podium-bar"><span class="podium-num">2</span></div>
+      </div>
+
+      <div class="podium-figure p1">
+        <div class="player">
+          <svg viewBox="0 0 100 100" width="100%" height="100%">
+            <circle cx="50" cy="24" r="15" fill="#0d1524" stroke="#ffcb47" stroke-width="3"/>
+            <path d="M50 6 L50 -1 M40 4 L45 9 M60 4 L55 9" stroke="#ffcb47" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M26 92 C26 58 33 42 50 42 C67 42 74 58 74 92" fill="#101a2c" stroke="#ffcb47" stroke-width="3"/>
+            <path d="M50 42 L50 66" stroke="#ffcb47" stroke-width="3"/>
+            <path d="M50 48 C34 48 24 36 20 24" stroke="#ffcb47" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+            <g transform="translate(8,6)">
+              <path d="M0 0 h24 v12 a12 12 0 0 1 -24 0 z" fill="none" stroke="#ffcb47" stroke-width="2.5"/>
+              <path d="M0 2 c-7 0 -7 12 0 12" fill="none" stroke="#ffcb47" stroke-width="2.5"/>
+              <path d="M24 2 c7 0 7 12 0 12" fill="none" stroke="#ffcb47" stroke-width="2.5"/>
+              <rect x="10" y="24" width="4" height="7" fill="#ffcb47"/>
+              <rect x="5" y="31" width="14" height="3.5" fill="#ffcb47"/>
+            </g>
+          </svg>
+        </div>
+        <div class="trophy-amt">₹350</div>
+        <div class="rank-badge">Champions</div>
+        <div class="podium-bar"><span class="podium-num">1</span></div>
+      </div>
+
+      <div class="podium-figure p3">
+        <div class="player">
+          <svg viewBox="0 0 100 100" width="100%" height="100%">
+            <circle cx="50" cy="28" r="13" fill="#0d1524" stroke="#e2a45c" stroke-width="2.5"/>
+            <path d="M50 10 L50 4 M43 8 L47 12 M57 8 L53 12" stroke="#e2a45c" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M30 88 C30 62 35 46 50 46 C65 46 70 62 70 88" fill="#101a2c" stroke="#e2a45c" stroke-width="2.5"/>
+            <path d="M50 46 L50 66" stroke="#e2a45c" stroke-width="2.5"/>
+            <path d="M50 52 C38 52 30 42 26 32" stroke="#e2a45c" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <g transform="translate(16,16)">
+              <path d="M0 0 h18 v9 a9 9 0 0 1 -18 0 z" fill="none" stroke="#e2a45c" stroke-width="2"/>
+              <path d="M0 2 c-5 0 -5 9 0 9" fill="none" stroke="#e2a45c" stroke-width="2"/>
+              <path d="M18 2 c5 0 5 9 0 9" fill="none" stroke="#e2a45c" stroke-width="2"/>
+              <rect x="7" y="18" width="4" height="5" fill="#e2a45c"/>
+              <rect x="3" y="23" width="12" height="3" fill="#e2a45c"/>
+            </g>
+          </svg>
+        </div>
+        <div class="trophy-amt">₹200</div>
+        <div class="rank-badge">3rd Place</div>
+        <div class="podium-bar"><span class="podium-num">3</span></div>
+      </div>
+    </div>
+
+    <div class="prize-total">Total Prize Pool <b>₹800</b> · Rank + Kill Points Decide the Champion</div>
+  </section>
+
+  <div class="hairline"></div>
+
+  <!-- POINTS SYSTEM -->
+  <section class="container">
+    <div class="section-head">
+      <div class="section-tag">Scoring Protocol</div>
+      <div class="section-title">Points System</div>
+    </div>
+    <div class="points-wrap">
+      <table class="points">
+        <thead>
+          <tr><th>Placement</th><th>Rank Points</th><th>Per Kill</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="rank">#1</td><td class="pts">10</td><td rowspan="4" style="vertical-align:middle; color:var(--ink);">1 Point / Kill<br><span style="font-size:12px;color:var(--ink-dim);">(No Limit)</span></td></tr>
+          <tr><td class="rank">#2</td><td class="pts">8</td></tr>
+          <tr><td class="rank">#3</td><td class="pts">6</td></tr>
+          <tr><td class="rank">#4 – #16</td><td class="pts">0</td></tr>
+        </tbody>
+      </table>
+      <div class="points-note">Final standings = Rank Points + Total Kill Points, added across both matches. Tie will be broken by higher total kills.</div>
+    </div>
+  </section>
+
+  <div class="hairline"></div>
+
+  <!-- MATCH SCHEDULE -->
+  <section class="container">
+    <div class="section-head">
+      <div class="section-tag">Deployment Schedule</div>
+      <div class="section-title">Match Lineup</div>
+    </div>
+    <div class="match-grid">
+      <div class="match-card">
+        <div class="match-tag">Match 01</div>
+        <h3>First Drop</h3>
+        <div class="match-meta">
+          <div>Time <b>8:00 PM</b></div>
+          <div>Map <b>Erangel</b></div>
+          <div>Perspective <b>TPP</b></div>
+        </div>
+      </div>
+      <div class="match-card">
+        <div class="match-tag">Match 02</div>
+        <h3>Final Circle</h3>
+        <div class="match-meta">
+          <div>Time <b>Right After Match 1</b></div>
+          <div>Map <b>Erangel</b></div>
+          <div>Perspective <b>TPP</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="hairline"></div>
+
+  <!-- RULES -->
+  <section class="container" id="rules">
+    <div class="section-head">
+      <div class="section-tag">Read Before You Drop</div>
+      <div class="section-title">Rules &amp; Regulations</div>
+    </div>
+    <div class="rules-list">
+      <div class="rule-item"><p><b>Squad size —</b> Strictly 2 players per team (Duo). Playing with 3+ on tag leads to disqualification.</p></div>
+      <div class="rule-item"><p><b>Room details —</b> Room ID &amp; Password will be shared in the official group 10 minutes before each match. Be online early.</p></div>
+      <div class="rule-item"><p><b>Reporting time —</b> Both players must join the lobby at least 15 minutes before the scheduled match time.</p></div>
+      <div class="rule-item"><p><b>Map &amp; perspective —</b> Both matches will be played on <b>Erangel, TPP</b> only.</p></div>
+      <div class="rule-item"><p><b>Fair play —</b> Use of hacks, emulators, macros, or teaming with another squad results in an <b>instant ban</b> from DS Clan events.</p></div>
+      <div class="rule-item"><p><b>Proof of match —</b> Submit a clear screenshot of the result screen (rank + kills) in the group right after every match.</p></div>
+      <div class="rule-item"><p><b>Entry fee —</b> ₹40 per team, payable in advance to confirm your slot. <b>Non-refundable</b> once a slot is allotted.</p></div>
+      <div class="rule-item"><p><b>Slots —</b> Limited to 20 teams. Slots are confirmed strictly on a first-pay-first-serve basis.</p></div>
+      <div class="rule-item"><p><b>Conduct —</b> Abuse, toxicity, or disrespect toward admins/other players in the group will lead to removal without refund.</p></div>
+      <div class="rule-item"><p><b>Final word —</b> All scoring and eligibility decisions made by DS Clan admins are final and binding.</p></div>
+    </div>
+  </section>
+
+  <div class="hairline"></div>
+
+  <!-- REGISTER -->
+  <section class="container" id="register">
+    <div class="section-head">
+      <div class="section-tag">Slot Confirmation</div>
+      <div class="section-title">Pay &amp; Register</div>
+    </div>
+
+    <div class="reg-flow">
+      <div class="pay-card">
+        <div class="lbl">Scan &amp; Pay</div>
+        <img src="payment-qr.jpg" alt="PhonePe payment QR code">
+        <div class="payee">ROHIT KUMAR</div>
+        <div class="fee-note">Pay ₹40 · Then fill the form →</div>
+      </div>
+
+      <div class="form-card">
+        <h3>Team Registration</h3>
+        <form class="reg-form" id="regForm">
+          <div>
+            <label for="teamName">Team Name</label>
+            <input type="text" id="teamName" required maxlength="40" placeholder="e.g. GHOST RECON">
+          </div>
+          <div class="field-row">
+            <div>
+              <label for="p1Name">Player 1 IGN</label>
+              <input type="text" id="p1Name" required maxlength="30">
+            </div>
+            <div>
+              <label for="p1Uid">Player 1 UID</label>
+              <input type="text" id="p1Uid" required maxlength="20" inputmode="numeric">
+            </div>
+          </div>
+          <div class="field-row">
+            <div>
+              <label for="p2Name">Player 2 IGN</label>
+              <input type="text" id="p2Name" required maxlength="30">
+            </div>
+            <div>
+              <label for="p2Uid">Player 2 UID</label>
+              <input type="text" id="p2Uid" required maxlength="20" inputmode="numeric">
+            </div>
+          </div>
+          <div>
+            <label for="whatsapp">WhatsApp Number</label>
+            <input type="tel" id="whatsapp" required maxlength="15" inputmode="numeric" placeholder="10-digit number">
+          </div>
+          <div>
+            <label for="utr">Payment UTR / Transaction ID</label>
+            <input type="text" id="utr" required maxlength="30" placeholder="From PhonePe payment screen">
+          </div>
+          <button type="submit" class="submit-btn" id="regSubmit">Confirm Registration</button>
+          <div class="form-msg" id="regMsg"></div>
+        </form>
+      </div>
+    </div>
+    <div class="slots-left" style="text-align:center;">Only <b>20 Team Slots</b> Available · First-Pay-First-Serve</div>
+  </section>
+
+  <div class="hairline"></div>
+
+  <!-- REGISTERED TEAMS -->
+  <section class="container" id="teams">
+    <div class="section-head">
+      <div class="section-tag">Confirmed Lobby</div>
+      <div class="section-title">Registered Teams</div>
+    </div>
+    <div class="teams-wrap">
+      <div class="teams-list" id="teamsList">
+        <div class="teams-loading">Loading teams…</div>
+      </div>
+    </div>
+    <div class="teams-count" id="teamsCount"></div>
+  </section>
+
+  <div class="hairline"></div>
+
+  <footer>
+    <div><span class="clan-name">DS CLAN</span> · Mobile Battle Royale Division</div>
+    <div style="margin-top:6px; opacity:.7;">BGMI Duo Tournament · 12 August</div>
+  </footer>
+
+<script>
+  // marquee content
+  const items = ["DS CLAN PRESENTS","BGMI DUO TOURNAMENT","12 AUGUST","ENTRY ₹40 / TEAM","PRIZE POOL ₹800","20 SLOTS ONLY","ERANGEL · TPP"];
+  const m = document.getElementById('marquee');
+  const html = items.map(t=>`<span>${t}</span>`).join('');
+  m.innerHTML = html + html;
+
+  // confetti
+  const colors = ['#39ffe3','#ffcb47','#ff3d81','#c7d3dd'];
+  const cWrap = document.getElementById('confetti');
+  for(let i=0;i<26;i++){
+    const el = document.createElement('i');
+    el.style.left = Math.random()*100+'%';
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.animationDuration = (4+Math.random()*5)+'s';
+    el.style.animationDelay = (Math.random()*6)+'s';
+    el.style.opacity = 0.5+Math.random()*0.5;
+    el.style.transform = `rotate(${Math.random()*360}deg)`;
+    cWrap.appendChild(el);
+  }
+
+  /* =========================================================
+     TEAM REGISTRATION + PUBLIC TEAM LIST
+     Backed by a Google Sheet via a Google Apps Script Web App.
+     1) Deploy the Apps Script (Code.gs, provided separately) as a Web App.
+     2) Paste that Web App's URL below.
+  ========================================================= */
+  const SHEET_API_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+  const regForm = document.getElementById('regForm');
+  const regMsg = document.getElementById('regMsg');
+  const regSubmit = document.getElementById('regSubmit');
+  const teamsList = document.getElementById('teamsList');
+  const teamsCount = document.getElementById('teamsCount');
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  async function loadTeams(){
+    if(!SHEET_API_URL || SHEET_API_URL.includes('PASTE_YOUR')){
+      teamsList.innerHTML = '<div class="teams-empty">Team list will appear here once registration backend is connected.</div>';
+      teamsCount.textContent = '';
+      return;
+    }
+    try{
+      const res = await fetch(SHEET_API_URL, { method:'GET' });
+      const data = await res.json();
+      const teams = Array.isArray(data.teams) ? data.teams : [];
+      if(teams.length === 0){
+        teamsList.innerHTML = '<div class="teams-empty">No teams registered yet. Be the first to lock a slot!</div>';
+      } else {
+        teamsList.innerHTML = teams.map((name, i) =>
+          `<div class="team-row"><span class="team-slot">#${String(i+1).padStart(2,'0')}</span><span class="team-name">${escapeHtml(name)}</span></div>`
+        ).join('');
+      }
+      teamsCount.innerHTML = `<b>${teams.length}</b> / 20 Slots Filled`;
+    }catch(err){
+      teamsList.innerHTML = '<div class="teams-empty">Could not load team list. Please refresh.</div>';
+    }
+  }
+
+  if(regForm){
+    regForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      regMsg.className = 'form-msg';
+      regMsg.textContent = '';
+
+      const payload = {
+        teamName: document.getElementById('teamName').value.trim(),
+        p1Name: document.getElementById('p1Name').value.trim(),
+        p1Uid: document.getElementById('p1Uid').value.trim(),
+        p2Name: document.getElementById('p2Name').value.trim(),
+        p2Uid: document.getElementById('p2Uid').value.trim(),
+        whatsapp: document.getElementById('whatsapp').value.trim(),
+        utr: document.getElementById('utr').value.trim(),
+        timestamp: new Date().toISOString()
+      };
+
+      if(!SHEET_API_URL || SHEET_API_URL.includes('PASTE_YOUR')){
+        regMsg.className = 'form-msg err';
+        regMsg.textContent = 'Registration backend not connected yet. Contact admin on WhatsApp instead.';
+        return;
+      }
+
+      regSubmit.disabled = true;
+      regSubmit.textContent = 'Submitting…';
+
+      try{
+        await fetch(SHEET_API_URL, {
+          method:'POST',
+          headers:{ 'Content-Type':'text/plain' },
+          body: JSON.stringify(payload)
+        });
+        regMsg.className = 'form-msg ok';
+        regMsg.textContent = 'Registered! Your slot request has been recorded.';
+        regForm.reset();
+        loadTeams();
+      }catch(err){
+        regMsg.className = 'form-msg err';
+        regMsg.textContent = 'Something went wrong. Please try again or message admin.';
+      }finally{
+        regSubmit.disabled = false;
+        regSubmit.textContent = 'Confirm Registration';
+      }
+    });
+  }
+
+  loadTeams();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,63 @@
+/**
+ * DS CLAN — BGMI Duo Tournament Registration Backend
+ * Deploy this as a Google Apps Script Web App bound to a Google Sheet.
+ *
+ * SETUP:
+ * 1. Go to sheets.google.com → create a new spreadsheet (e.g. "DS Clan Registrations").
+ * 2. Rename the first tab to exactly:  Teams
+ * 3. In row 1, add these headers (one per column):
+ *    Team Name | Player1 Name | Player1 UID | Player2 Name | Player2 UID | WhatsApp | UTR | Timestamp
+ * 4. In the sheet, go to Extensions → Apps Script.
+ * 5. Delete any starter code, paste this whole file in, and save.
+ * 6. Click Deploy → New deployment → type: Web app.
+ *      - Execute as: Me
+ *      - Who has access: Anyone
+ * 7. Click Deploy, authorize the permissions it asks for.
+ * 8. Copy the "Web app URL" it gives you.
+ * 9. Paste that URL into index.html, replacing:
+ *      const SHEET_API_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+ *
+ * Every time you edit this script, you must create a NEW deployment
+ * (or use "Manage deployments" → edit → New version) for changes to go live.
+ */
+
+const SHEET_NAME = "Teams";
+
+function doGet(e) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const data = sheet.getDataRange().getValues();
+  const teams = [];
+  for (let i = 1; i < data.length; i++) {
+    const name = data[i][0];
+    if (name) teams.push(String(name));
+  }
+  return ContentService
+    .createTextOutput(JSON.stringify({ teams: teams }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    const body = JSON.parse(e.postData.contents);
+
+    sheet.appendRow([
+      body.teamName || "",
+      body.p1Name || "",
+      body.p1Uid || "",
+      body.p2Name || "",
+      body.p2Uid || "",
+      body.whatsapp || "",
+      body.utr || "",
+      body.timestamp || new Date().toISOString()
+    ]);
+
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "ok" }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "error", message: String(err) }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
