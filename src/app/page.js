@@ -213,7 +213,7 @@ export default function Home() {
       {/* ── STAT DOG-TAGS ── */}
       <div className="stats">
         <div className="tag"><div className="k">Date</div><div className="v">{selectedTournament.date}</div></div>
-        <div className="tag"><div className="k">Timings</div><div className="v">9:30 AM &amp;<br />6:30 PM</div></div>
+        <div className="tag"><div className="k">Timings</div><div className="v">{selectedTournament.time}</div></div>
         <div className="tag"><div className="k">Mode</div><div className="v">{selectedTournament.mode}</div></div>
         <div className="tag"><div className="k">Max Teams</div><div className="v">{selectedTournament.slots}</div></div>
         <div className="tag danger"><div className="k">Entry Fee</div><div className="v">{selectedTournament.entryFee} / Team</div></div>
@@ -353,7 +353,7 @@ export default function Home() {
         <ul className="rules-list">
           <li className="critical"><b>01</b> Hacks, cheats, mod menus, GFX injectors or any illegal third-party tool are strictly banned — instant disqualification, no refund.</li>
           <li><b>02</b> Team size is fixed at 2 players (Duo). No substitutes allowed once a match begins.</li>
-          <li><b>03</b> Two matches on the day — Match 1 at 9:30 AM, Match 2 at 6:30 PM. Be online 10 minutes before each match.</li>
+          <li><b>03</b> Matches start at 8:00 PM in the evening. Be online 10 minutes before each match.</li>
           <li><b>04</b> Room ID &amp; password will be shared before every match — miss the timing and you miss the slot.</li>
           <li className="critical"><b>05</b> Teaming up with rival squads during any match is strictly banned and leads to disqualification.</li>
           <li><b>06</b> Submit a screenshot of the final result screen after each match for score verification.</li>
@@ -398,7 +398,7 @@ export default function Home() {
             <form className="reg-form" onSubmit={handleRegister}>
               <div>
                 <label className="form-label" htmlFor="teamName">Team Name</label>
-                <input className="form-input" id="teamName" type="text" required maxLength={40} placeholder="e.g. GHOST RECON" value={teamName} onChange={(e) => setTeamName(e.target.value)} />
+                <input className="form-input" id="teamName" type="text" required maxLength={40} placeholder="e.g. DS AXTERN" value={teamName} onChange={(e) => setTeamName(e.target.value)} />
               </div>
               <div className="field-row">
                 <div>
