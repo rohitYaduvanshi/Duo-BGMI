@@ -11,6 +11,7 @@
   --off-white: #eae6d6;
   --danger: #c1272d;
   --dim: #8a9178;
+  --success: #39ffe3;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,49 +22,68 @@ body {
   color: var(--off-white);
   font-family: 'Rajdhani', sans-serif;
   overflow-x: hidden;
-  position: relative;
+  min-height: 100vh;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg-void); }
 ::-webkit-scrollbar-thumb { background: var(--olive); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--amber); }
 
-/* Main Wrapper Container for Poster Effect */
+/* ============================================================
+   FULL WIDTH POSTER WRAPPER
+   ============================================================ */
 .poster-wrapper {
   position: relative;
   width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
+  min-height: 100vh;
   background:
-    radial-gradient(ellipse 900px 500px at 50% -10%, rgba(255,138,30,0.10), transparent 60%),
-    radial-gradient(ellipse 700px 700px at 90% 15%, rgba(74,90,52,0.18), transparent 55%),
-    linear-gradient(180deg, var(--bg-void) 0%, #0d1109 45%, var(--bg-void) 100%);
-  color: var(--off-white);
+    radial-gradient(ellipse 100% 50% at 50% -5%, rgba(255,138,30,0.12), transparent 55%),
+    radial-gradient(ellipse 70% 60% at 95% 20%, rgba(74,90,52,0.18), transparent 50%),
+    radial-gradient(ellipse 50% 40% at 5% 80%, rgba(193,39,45,0.06), transparent 50%),
+    linear-gradient(180deg, var(--bg-void) 0%, #0d1109 50%, var(--bg-void) 100%);
   overflow: hidden;
-  border: 1px solid #1c2216;
-  box-shadow: 0 40px 90px rgba(0,0,0,0.6);
 }
 
+/* Grid texture overlay */
 .poster-wrapper::before {
   content: "";
-  position: absolute; inset: 0;
+  position: fixed; inset: 0;
   background-image:
-    linear-gradient(rgba(234,230,214,0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(234,230,214,0.035) 1px, transparent 1px);
+    linear-gradient(rgba(234,230,214,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(234,230,214,0.03) 1px, transparent 1px);
   background-size: 34px 34px;
   pointer-events: none;
-  z-index: 1;
+  z-index: 0;
 }
 
-section, header, footer, div { position: relative; z-index: 2; }
+/* Scanline effect */
+.poster-wrapper::after {
+  content: "";
+  position: fixed; inset: 0;
+  background: linear-gradient(transparent 50%, rgba(0,0,0,0.03) 50%);
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 1;
+  animation: scanlines 8s linear infinite;
+}
 
-/* ============ TOP WARNING TAPE ============ */
+@keyframes scanlines {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 100px; }
+}
+
+.z2 { position: relative; z-index: 2; }
+
+/* Content Width Limiter */
+.inner { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+/* ============================================================
+   TOP WARNING TAPE
+   ============================================================ */
 .tape {
-  position: relative;
+  position: relative; z-index: 10;
   background: repeating-linear-gradient(-45deg, var(--warn) 0 18px, #1a1a12 18px 36px);
-  color: #1a1a12;
   text-align: center;
   padding: 7px 0;
   font-family: 'Share Tech Mono', monospace;
@@ -71,6 +91,7 @@ section, header, footer, div { position: relative; z-index: 2; }
   font-size: 13px;
   letter-spacing: 3px;
   text-transform: uppercase;
+  overflow: hidden;
 }
 .tape span {
   background: var(--bg-void);
@@ -78,135 +99,242 @@ section, header, footer, div { position: relative; z-index: 2; }
   padding: 2px 14px;
 }
 
-/* ============ CLAN BADGE ============ */
-.badge-row {
+/* ============================================================
+   HERO SECTION
+   ============================================================ */
+.hero {
+  position: relative;
+  z-index: 2;
+  min-height: 90vh;
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding-top: 26px;
+  text-align: center;
+  padding: 30px 24px 40px;
+  overflow: hidden;
+}
+
+/* Ambient glow pulse */
+.hero-glow {
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,138,30,0.08) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  pointer-events: none;
+  animation: glowPulse 4s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%,100% { opacity: 0.5; transform: translate(-50%,-50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%,-50%) scale(1.15); }
+}
+
+/* Rotating drop ring */
+.drop-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: clamp(320px,50vw,520px); height: clamp(320px,50vw,520px);
+  transform: translate(-50%,-50%);
+  border: 1.5px dashed rgba(255,138,30,0.2);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: ringRotate 30s linear infinite;
+}
+.drop-ring::before {
+  content: "";
+  position: absolute; inset: 40px;
+  border: 1px dashed rgba(234,230,214,0.08);
+  border-radius: 50%;
+  animation: ringRotate 20s linear infinite reverse;
+}
+.drop-ring::after {
+  content: "";
+  position: absolute; inset: -40px;
+  border: 1px solid rgba(255,138,30,0.07);
+  border-radius: 50%;
+  animation: ringRotate 50s linear infinite;
+}
+@keyframes ringRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Radar sweep beam */
+.radar-sweep {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: clamp(320px,50vw,520px); height: clamp(320px,50vw,520px);
+  transform: translate(-50%,-50%);
+  border-radius: 50%;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.3;
+}
+.radar-sweep::before {
+  content: "";
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 50%; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--amber));
+  transform-origin: left center;
+  animation: radarSpin 4s linear infinite;
+}
+@keyframes radarSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Crosshairs */
+.crosshair { position: absolute; pointer-events: none; }
+.crosshair.tl { top: 20px; left: 20px; animation: crossPulse 3s ease-in-out infinite; }
+.crosshair.br { bottom: 20px; right: 20px; transform: rotate(180deg); animation: crossPulse 3s ease-in-out infinite 1.5s; }
+@keyframes crossPulse {
+  0%,100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+/* DS Badge */
+.badge-row {
+  position: relative; z-index: 3;
+  display: flex; justify-content: center;
+  padding-top: 20px;
+  margin-bottom: 10px;
 }
 .badge {
-  width: 64px; height: 64px;
+  width: 68px; height: 68px;
   border: 2px solid var(--amber);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   position: relative;
   background: radial-gradient(circle, rgba(255,138,30,0.12), transparent 70%);
+  animation: badgePulse 3s ease-in-out infinite;
 }
 .badge::before, .badge::after {
   content: "";
   position: absolute;
-  border: 1px dashed rgba(255,138,30,0.4);
+  border: 1px dashed rgba(255,138,30,0.35);
   border-radius: 50%;
 }
-.badge::before { inset: -8px; }
-.badge::after { inset: -16px; opacity: 0.5; }
+.badge::before { inset: -9px; animation: ringRotate 8s linear infinite; }
+.badge::after { inset: -18px; opacity: 0.4; animation: ringRotate 15s linear infinite reverse; }
 .badge span {
   font-family: 'Black Ops One', sans-serif;
-  font-size: 20px;
-  color: var(--amber);
-  letter-spacing: 1px;
+  font-size: 22px; color: var(--amber); letter-spacing: 1px;
+}
+@keyframes badgePulse {
+  0%,100% { box-shadow: 0 0 15px rgba(255,138,30,0.3); }
+  50% { box-shadow: 0 0 35px rgba(255,138,30,0.65), 0 0 60px rgba(255,138,30,0.2); }
 }
 
-/* ============ HERO ============ */
-.hero {
-  position: relative;
-  padding: 16px 24px 26px;
-  text-align: center;
-}
-
-.drop-ring {
-  position: absolute;
-  top: 44%; left: 50%;
-  width: 420px; height: 420px;
-  transform: translate(-50%,-50%);
-  border: 1.5px dashed rgba(255,138,30,0.22);
-  border-radius: 50%;
-  pointer-events: none;
-}
-.drop-ring::before {
-  content: "";
-  position: absolute; inset: 38px;
-  border: 1px dashed rgba(234,230,214,0.12);
-  border-radius: 50%;
-}
-
-.crosshair { position: absolute; pointer-events: none; opacity: 0.5; }
-.crosshair.tl { top: 14px; left: 14px; }
-.crosshair.br { bottom: 14px; right: 14px; transform: rotate(180deg); }
-
+/* Eyebrow */
 .eyebrow {
+  position: relative; z-index: 3;
   font-family: 'Share Tech Mono', monospace;
-  font-size: 12px;
-  letter-spacing: 5px;
-  color: var(--amber);
-  text-transform: uppercase;
+  font-size: 12px; letter-spacing: 5px;
+  color: var(--amber); text-transform: uppercase;
   margin-bottom: 10px;
+  animation: fadeSlideUp 0.8s ease both 0.2s;
 }
 .eyebrow::before, .eyebrow::after { content: "// "; opacity: 0.6; }
 
+/* Brand Title */
 .brand {
+  position: relative; z-index: 3;
   font-family: 'Black Ops One', sans-serif;
-  font-size: clamp(44px, 9vw, 68px);
+  font-size: clamp(48px, 11vw, 88px);
   line-height: 0.95;
   color: var(--off-white);
-  text-shadow: 0 0 26px rgba(255,138,30,0.35);
   letter-spacing: 2px;
+  animation: brandReveal 1s ease both 0.4s, brandGlow 4s ease-in-out infinite 1.5s;
 }
 .brand .hl { color: var(--amber); }
+@keyframes brandReveal {
+  from { opacity: 0; transform: translateY(30px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes brandGlow {
+  0%,100% { text-shadow: 0 0 20px rgba(255,138,30,0.2); }
+  50% { text-shadow: 0 0 50px rgba(255,138,30,0.6), 0 0 100px rgba(255,138,30,0.2); }
+}
+
+/* BGMI Sketch Character (right side) */
+.bgmi-sketch {
+  position: absolute;
+  right: clamp(10px, 6%, 100px);
+  bottom: 0;
+  height: clamp(200px, 45vh, 400px);
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 1;
+  filter: sepia(1) hue-rotate(20deg);
+  animation: sketchFloat 6s ease-in-out infinite;
+}
+@keyframes sketchFloat {
+  0%,100% { transform: translateY(0px); }
+  50% { transform: translateY(-18px); }
+}
 
 .subline {
+  position: relative; z-index: 3;
   margin-top: 10px;
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 700;
-  font-size: clamp(18px, 4vw, 25px);
-  letter-spacing: 5px;
-  color: var(--off-white);
-  text-transform: uppercase;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: clamp(18px, 4vw, 26px);
+  letter-spacing: 6px; color: var(--off-white); text-transform: uppercase;
+  animation: fadeSlideUp 0.8s ease both 0.7s;
 }
 .subline em { font-style: normal; color: var(--danger); }
 
 .tagline {
-  margin-top: 14px;
-  font-size: 15px;
-  color: var(--dim);
-  letter-spacing: 1px;
+  position: relative; z-index: 3;
+  margin-top: 14px; font-size: 15px;
+  color: var(--dim); letter-spacing: 1px;
+  animation: fadeSlideUp 0.8s ease both 0.9s;
 }
 
 .cta-row {
+  position: relative; z-index: 3;
   margin-top: 24px;
-  display: flex;
-  gap: 14px;
-  justify-content: center;
-  flex-wrap: wrap;
+  display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+  animation: fadeSlideUp 0.8s ease both 1.1s;
 }
 
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
 .btn {
   font-family: 'Share Tech Mono', monospace;
-  letter-spacing: 2px;
-  font-size: 15px;
-  text-transform: uppercase;
-  text-decoration: none;
-  padding: 12px 28px;
-  border-radius: 4px;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: none;
-  cursor: pointer;
-  transition: all .15s ease;
+  letter-spacing: 2px; font-size: 14px;
+  text-transform: uppercase; text-decoration: none;
+  padding: 12px 28px; border-radius: 4px;
+  border: none; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: all .2s ease;
+  position: relative; overflow: hidden;
 }
+.btn::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,0);
+  transition: background .2s ease;
+}
+.btn:hover::after { background: rgba(255,255,255,0.08); }
 
 .btn-primary {
   background: linear-gradient(135deg, var(--amber-deep), var(--amber));
   color: #1a1206;
-  box-shadow: 0 8px 20px rgba(255,138,30,0.25);
+  box-shadow: 0 6px 20px rgba(255,138,30,0.3);
 }
 .btn-primary:hover {
-  background: var(--warn);
-  color: #1a1a12;
-  box-shadow: 0 10px 25px rgba(244,196,48,0.4);
-  transform: translateY(-2px);
+  background: var(--warn); color: #1a1a12;
+  box-shadow: 0 10px 28px rgba(244,196,48,0.5);
+  transform: translateY(-3px);
 }
 
 .btn-ghost {
@@ -215,300 +343,347 @@ section, header, footer, div { position: relative; z-index: 2; }
   color: var(--off-white);
 }
 .btn-ghost:hover {
-  border-color: var(--amber);
-  color: var(--amber);
-  transform: translateY(-2px);
+  border-color: var(--amber); color: var(--amber);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(255,138,30,0.15);
 }
 
-/* ============ STAT DOG-TAGS ============ */
+/* ============================================================
+   STAT DOG-TAGS
+   ============================================================ */
 .stats {
-  position: relative;
+  position: relative; z-index: 2;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  padding: 8px 26px 30px;
+  padding: 8px 24px 30px;
+  max-width: 900px; margin: 0 auto;
 }
 @media(min-width: 560px) { .stats { grid-template-columns: repeat(5, 1fr); } }
 
 .tag {
   background: linear-gradient(160deg, var(--olive) 0%, #1a2013 100%);
   border: 1px solid var(--olive-light);
-  border-radius: 6px;
-  padding: 14px 10px;
-  text-align: center;
-  position: relative;
+  border-radius: 6px; padding: 14px 10px;
+  text-align: center; position: relative;
+  transition: all .2s ease;
+  cursor: default;
 }
 .tag::after {
   content: "";
   position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
   width: 16px; height: 8px;
   border: 1px solid var(--olive-light);
-  border-bottom: none;
-  border-radius: 6px 6px 0 0;
+  border-bottom: none; border-radius: 6px 6px 0 0;
   background: var(--bg-void);
+}
+.tag:hover {
+  border-color: var(--amber);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 24px rgba(255,138,30,0.2);
+  background: linear-gradient(160deg, #3d4d2a 0%, #222818 100%);
 }
 .tag .k {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 10px;
-  color: var(--dim);
-  letter-spacing: 2px;
-  text-transform: uppercase;
+  font-size: 10px; color: var(--dim);
+  letter-spacing: 2px; text-transform: uppercase;
   margin-bottom: 6px;
 }
 .tag .v {
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 700;
-  font-size: 16px;
-  color: var(--amber);
-  letter-spacing: 0.3px;
-  line-height: 1.25;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: 16px; color: var(--amber);
+  letter-spacing: 0.3px; line-height: 1.25;
 }
 .tag.danger .v { color: var(--danger); }
 
-/* ============ DIVIDER ============ */
+/* ============================================================
+   DIVIDER
+   ============================================================ */
 .divider {
   display: flex; align-items: center; gap: 12px;
-  padding: 0 26px;
-  margin: 8px 0 24px;
+  padding: 0 24px; margin: 8px auto 22px;
+  max-width: 900px; position: relative; z-index: 2;
 }
-.divider .line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--olive-light), transparent); }
-.divider .diamond { width: 8px; height: 8px; background: var(--amber); transform: rotate(45deg); }
+.divider .line {
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--olive-light), transparent);
+}
+.divider .diamond {
+  width: 8px; height: 8px;
+  background: var(--amber); transform: rotate(45deg);
+  animation: diamondPulse 3s ease-in-out infinite;
+}
+@keyframes diamondPulse {
+  0%,100% { box-shadow: 0 0 4px rgba(255,138,30,0.3); }
+  50% { box-shadow: 0 0 12px rgba(255,138,30,0.8); }
+}
 
-/* ============ SECTION HEADERS ============ */
+/* ============================================================
+   SECTION HEADERS (Warning Tape Style)
+   ============================================================ */
 .section-head {
   background: repeating-linear-gradient(-45deg, var(--warn) 0 12px, #1a1a12 12px 24px);
-  padding: 3px;
-  border-radius: 4px;
-  margin-bottom: 16px;
+  padding: 3px; border-radius: 4px; margin-bottom: 16px;
 }
 .section-head-inner {
   background: var(--bg-panel);
-  padding: 9px 16px;
-  border-radius: 2px;
+  padding: 9px 16px; border-radius: 2px;
   display: flex; align-items: center; justify-content: space-between;
 }
 .section-head-inner h2 {
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 700;
-  font-size: 18px;
-  letter-spacing: 3px;
-  color: var(--warn);
-  text-transform: uppercase;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: 18px; letter-spacing: 3px;
+  color: var(--warn); text-transform: uppercase;
 }
 .section-head-inner .code {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 11px;
-  color: var(--dim);
+  font-size: 11px; color: var(--dim);
 }
 
-/* ============ POINTS SYSTEM ============ */
-.points-wrap { padding: 0 26px; margin-bottom: 8px; }
+/* Content sections */
+.content-section {
+  max-width: 900px; margin: 0 auto;
+  padding: 0 24px 28px;
+  position: relative; z-index: 2;
+}
 
+/* ============================================================
+   POINTS SYSTEM
+   ============================================================ */
 .points-table {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 10px;
+  display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;
 }
 .prow {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+  display: flex; align-items: center; gap: 14px;
   background: linear-gradient(160deg, var(--olive) 0%, #1a2013 100%);
   border: 1px solid var(--olive-light);
-  border-radius: 6px;
-  padding: 10px 16px;
+  border-radius: 6px; padding: 10px 16px;
+  transition: all .2s ease;
+}
+.prow:hover {
+  border-color: var(--amber);
+  background: linear-gradient(160deg, #3d4d2a 0%, #232918 100%);
+  transform: translateX(4px);
 }
 .prow .rank {
   font-family: 'Black Ops One', sans-serif;
-  font-size: 16px;
-  color: var(--amber);
-  min-width: 34px;
+  font-size: 16px; color: var(--amber); min-width: 34px;
 }
 .prow.gold .rank { color: var(--warn); }
 .prow .plabel {
-  flex: 1;
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 600;
-  font-size: 14.5px;
-  color: var(--off-white);
-  letter-spacing: 0.5px;
+  flex: 1; font-family: 'Rajdhani', sans-serif;
+  font-weight: 600; font-size: 14.5px;
+  color: var(--off-white); letter-spacing: 0.5px;
 }
 .prow .pval {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 14px;
+  font-family: 'Share Tech Mono', monospace; font-size: 14px;
   color: var(--off-white);
   background: rgba(255,138,30,0.12);
   border: 1px solid rgba(255,138,30,0.3);
-  padding: 3px 10px;
-  border-radius: 4px;
-  white-space: nowrap;
+  padding: 3px 10px; border-radius: 4px; white-space: nowrap;
 }
 
 .kill-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+  display: flex; align-items: center; gap: 14px;
   background: rgba(193,39,45,0.10);
   border: 1px solid rgba(193,39,45,0.4);
-  border-radius: 6px;
-  padding: 10px 16px;
+  border-radius: 6px; padding: 10px 16px;
+  transition: all .2s ease;
 }
+.kill-row:hover { background: rgba(193,39,45,0.16); transform: translateX(4px); }
 .kill-row .plabel {
-  flex: 1;
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 700;
-  font-size: 14.5px;
-  color: var(--off-white);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+  flex: 1; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: 14.5px; color: var(--off-white);
+  letter-spacing: 0.5px; text-transform: uppercase;
 }
 .kill-row .pval {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 14px;
+  font-family: 'Share Tech Mono', monospace; font-size: 14px;
   color: var(--danger);
   background: rgba(193,39,45,0.15);
   border: 1px solid rgba(193,39,45,0.4);
-  padding: 3px 10px;
-  border-radius: 4px;
-  white-space: nowrap;
+  padding: 3px 10px; border-radius: 4px; white-space: nowrap;
 }
 
-/* ============ RULES ============ */
-.rules-wrap { padding: 0 26px 8px; }
+/* ============================================================
+   PRIZE POOL SECTION
+   ============================================================ */
+.prize-stage {
+  position: relative;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: 40px 0 0; overflow: hidden;
+}
 
+.confetti-wrap { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.confetti-wrap i {
+  position: absolute; top: -10%; width: 6px; height: 12px; opacity: 0.8;
+  animation: confettiFall linear infinite;
+}
+@keyframes confettiFall {
+  to { transform: translateY(120vh) rotate(360deg); opacity: 0.2; }
+}
+
+.podium-figure {
+  display: flex; flex-direction: column;
+  align-items: center; position: relative; z-index: 2; width: 33%;
+}
+.player-icon { width: 70px; height: 70px; margin-bottom: 8px; animation: playerFloat 3.5s ease-in-out infinite; }
+.podium-figure.p1 .player-icon { width: 90px; height: 90px; }
+@keyframes playerFloat {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.trophy-amt {
+  font-family: 'Black Ops One', sans-serif; color: var(--warn);
+  font-size: clamp(18px,4vw,26px); margin-top: 8px;
+}
+.rank-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; color: var(--dim); text-transform: uppercase;
+  margin-top: 3px; letter-spacing: 2px;
+}
+
+.podium-bar {
+  width: 85%; margin-top: 10px;
+  border-radius: 4px 4px 0 0;
+  border: 1px solid var(--olive-light);
+  border-bottom: none;
+  background: linear-gradient(180deg, var(--olive) 0%, #111a0c 100%);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding-top: 10px;
+  position: relative;
+}
+.podium-bar::before {
+  content: "";
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.podium-figure.p1 .podium-bar { height: 140px; }
+.podium-figure.p1 .podium-bar::before { background: var(--warn); box-shadow: 0 0 12px var(--warn); }
+.podium-figure.p2 .podium-bar { height: 100px; }
+.podium-figure.p2 .podium-bar::before { background: #c7d3dd; }
+.podium-figure.p3 .podium-bar { height: 72px; }
+.podium-figure.p3 .podium-bar::before { background: #cd7f32; }
+.podium-num {
+  font-family: 'Black Ops One', sans-serif;
+  font-size: 32px; color: rgba(255,255,255,0.06);
+}
+
+.prize-total {
+  text-align: center; margin-top: 20px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px; letter-spacing: 2px;
+  color: var(--dim); text-transform: uppercase;
+}
+.prize-total b { color: var(--amber); font-size: 14px; }
+
+/* ============================================================
+   RULES
+   ============================================================ */
 .rules-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  list-style: none; display: flex; flex-direction: column; gap: 10px;
 }
 .rules-list li {
-  display: flex;
-  gap: 12px;
-  font-size: 14.5px;
-  line-height: 1.45;
-  color: #d9d6c6;
+  display: flex; gap: 12px; font-size: 14.5px;
+  line-height: 1.45; color: #d9d6c6;
   border-left: 2px solid var(--olive-light);
-  padding: 2px 0 2px 14px;
+  padding: 4px 0 4px 14px;
+  transition: border-color .2s, background .2s;
+  border-radius: 0 4px 4px 0;
 }
+.rules-list li:hover { border-left-color: var(--amber); background: rgba(255,138,30,0.04); }
 .rules-list li b {
   font-family: 'Share Tech Mono', monospace;
-  color: var(--amber);
-  min-width: 20px;
+  color: var(--amber); min-width: 24px; flex-shrink: 0;
 }
 .rules-list li.critical { border-left-color: var(--danger); }
 .rules-list li.critical b { color: var(--danger); }
+.rules-list li.critical:hover { border-left-color: var(--danger); background: rgba(193,39,45,0.05); }
 
-/* ============ REGISTER / CONTACT BANNER ============ */
+/* ============================================================
+   REGISTER / CONTACT BANNER
+   ============================================================ */
 .register-banner {
-  margin: 26px 26px 30px;
+  margin: 0 24px 30px; max-width: 900px;
   background: linear-gradient(135deg, var(--amber-deep), var(--amber));
-  border-radius: 8px;
-  padding: 20px 22px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  box-shadow: 0 14px 30px rgba(255,138,30,0.18);
+  border-radius: 8px; padding: 20px 22px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap;
+  box-shadow: 0 14px 40px rgba(255,138,30,0.25);
+  position: relative; z-index: 2;
+  transition: transform .2s, box-shadow .2s;
 }
+.register-banner:hover { transform: translateY(-2px); box-shadow: 0 20px 50px rgba(255,138,30,0.35); }
+
+@media(min-width: 900px) { .register-banner { margin: 0 auto 30px; } }
+
 .register-banner .left h3 {
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 700;
-  font-size: 20px;
-  color: #1a1206;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: 20px; color: #1a1206;
+  letter-spacing: 1px; text-transform: uppercase;
 }
 .register-banner .left p {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 11.5px;
-  color: #3a2a10;
-  margin-top: 2px;
-  letter-spacing: 0.5px;
+  font-size: 11.5px; color: #3a2a10; margin-top: 2px;
 }
 .register-banner .right { text-align: right; }
 .register-banner .right .num {
   font-family: 'Black Ops One', sans-serif;
-  font-size: 22px;
-  color: #1a1206;
-  letter-spacing: 1px;
-  white-space: nowrap;
+  font-size: 22px; color: #1a1206;
+  letter-spacing: 1px; white-space: nowrap;
 }
 .register-banner .right .lbl {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 10px;
-  color: #3a2a10;
-  letter-spacing: 2px;
-  text-transform: uppercase;
+  font-size: 10px; color: #3a2a10;
+  letter-spacing: 2px; text-transform: uppercase;
 }
 
-/* ============ PAY & REGISTER FORM ============ */
-.form-section-wrap {
-  padding: 0 26px 30px;
-}
-
+/* ============================================================
+   FORM
+   ============================================================ */
 .reg-flow {
-  display: grid;
-  grid-template-columns: 1fr 1.4fr;
-  gap: 20px;
-  align-items: stretch;
+  display: grid; grid-template-columns: 1fr 1.5fr;
+  gap: 20px; align-items: stretch;
 }
+@media(max-width: 640px) { .reg-flow { grid-template-columns: 1fr; } }
 
 .pay-card {
   background: var(--bg-panel);
   border: 1px solid var(--olive-light);
-  border-radius: 6px;
-  padding: 24px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  border-radius: 6px; padding: 24px 20px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
 }
 .pay-card .pay-lbl {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 12px;
-  color: var(--amber);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 14px;
+  font-size: 12px; color: var(--amber);
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px;
 }
 .pay-card img {
-  width: 100%;
-  max-width: 200px;
-  border-radius: 6px;
-  border: 1px solid var(--amber);
-  display: block;
-  margin: 0 auto;
+  width: 100%; max-width: 190px;
+  border-radius: 6px; border: 1px solid var(--amber);
+  display: block; margin: 0 auto;
+  transition: box-shadow .2s;
 }
+.pay-card img:hover { box-shadow: 0 0 20px rgba(255,138,30,0.4); }
 .pay-card .payee-name {
   margin-top: 12px;
   font-family: 'Black Ops One', sans-serif;
-  font-size: 16px;
-  color: var(--amber);
-  letter-spacing: 1px;
+  font-size: 15px; color: var(--amber); letter-spacing: 1px;
 }
 .pay-card .pay-instruction {
-  margin-top: 6px;
-  color: var(--warn);
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 13px;
+  margin-top: 6px; color: var(--warn);
+  font-family: 'Share Tech Mono', monospace; font-size: 13px;
 }
 
 .form-card {
   background: var(--bg-panel);
   border: 1px solid var(--olive-light);
-  border-radius: 6px;
-  padding: 24px 20px;
+  border-radius: 6px; padding: 22px 20px;
 }
 .form-card h3 {
   font-family: 'Black Ops One', sans-serif;
-  font-size: 18px;
-  color: var(--off-white);
-  margin-bottom: 16px;
-  letter-spacing: 1px;
+  font-size: 17px; color: var(--off-white);
+  margin-bottom: 16px; letter-spacing: 1px;
   border-bottom: 1px solid var(--olive);
   padding-bottom: 10px;
 }
@@ -517,141 +692,178 @@ section, header, footer, div { position: relative; z-index: 2; }
 
 .form-label {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 11px;
-  color: var(--dim);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-  display: block;
+  font-size: 11px; color: var(--dim);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 4px; display: block;
 }
-
 .form-input {
   width: 100%;
   background: var(--bg-void);
   border: 1px solid var(--olive-light);
-  border-radius: 4px;
-  padding: 10px 12px;
+  border-radius: 4px; padding: 10px 12px;
   color: var(--off-white);
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  outline: none;
-  transition: border-color .15s, box-shadow .15s;
+  font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 600;
+  outline: none; transition: border-color .15s, box-shadow .15s;
 }
 .form-input:focus {
   border-color: var(--amber);
-  box-shadow: 0 0 0 2px rgba(255,138,30,0.15);
+  box-shadow: 0 0 0 2px rgba(255,138,30,0.12);
 }
 .form-input::placeholder { color: var(--dim); font-size: 13px; opacity: 0.6; }
 
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media(max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
 
-/* Upload Zone */
 .upload-zone {
   border: 2px dashed var(--olive-light);
   border-radius: 6px;
   background: rgba(255,138,30,0.02);
-  padding: 18px 12px;
-  text-align: center;
-  cursor: pointer;
-  transition: all .2s ease;
+  padding: 18px 12px; text-align: center;
+  cursor: pointer; transition: all .2s ease;
   position: relative;
 }
 .upload-zone:hover, .upload-zone.drag-over {
   border-color: var(--amber);
-  background: rgba(255,138,30,0.06);
+  background: rgba(255,138,30,0.05);
 }
 .upload-zone input[type="file"] {
-  position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  opacity: 0; cursor: pointer;
 }
 .upload-icon { font-size: 24px; margin-bottom: 6px; display: block; }
 .upload-text {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 13px;
-  color: var(--amber);
-  text-transform: uppercase;
+  font-size: 12px; color: var(--amber); text-transform: uppercase;
 }
 .upload-subtext { font-size: 12px; color: var(--dim); margin-top: 2px; }
 
 .screenshot-preview { position: relative; display: inline-block; }
 .screenshot-preview img {
-  max-width: 100%; max-height: 150px; border-radius: 4px; border: 1px solid var(--amber); display: block; margin: 0 auto;
+  max-width: 100%; max-height: 140px; border-radius: 4px;
+  border: 1px solid var(--amber); display: block; margin: 0 auto;
 }
 .remove-btn {
   position: absolute; top: -8px; right: -8px; width: 22px; height: 22px;
-  background: var(--danger); color: #fff; border: none; border-radius: 50%; cursor: pointer;
-  font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+  background: var(--danger); color: #fff; border: none;
+  border-radius: 50%; cursor: pointer; font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
 }
 
 .submit-btn {
-  margin-top: 6px;
-  border: none;
-  cursor: pointer;
+  margin-top: 6px; border: none; cursor: pointer;
   font-family: 'Black Ops One', sans-serif;
-  letter-spacing: 2px;
-  font-size: 16px;
-  text-transform: uppercase;
-  padding: 14px;
-  border-radius: 4px;
+  letter-spacing: 2px; font-size: 16px; text-transform: uppercase;
+  padding: 14px; border-radius: 4px;
   background: linear-gradient(135deg, var(--amber-deep), var(--amber));
   color: #1a1206;
-  box-shadow: 0 6px 18px rgba(255,138,30,0.25);
-  transition: all .15s ease;
-  width: 100%;
+  box-shadow: 0 6px 20px rgba(255,138,30,0.25);
+  transition: all .15s ease; width: 100%;
 }
-.submit-btn:hover { background: var(--warn); color: #1a1a12; transform: translateY(-2px); }
+.submit-btn:hover { background: var(--warn); color: #1a1a12; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(244,196,48,0.4); }
 .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-.form-msg-ok { color: #39ffe3; font-family: 'Share Tech Mono', monospace; font-size: 13px; margin-top: 8px; }
-.form-msg-err { color: var(--danger); font-family: 'Share Tech Mono', monospace; font-size: 13px; margin-top: 8px; }
+.form-msg-ok { color: var(--success); font-family: 'Share Tech Mono', monospace; font-size: 12px; margin-top: 8px; }
+.form-msg-err { color: var(--danger); font-family: 'Share Tech Mono', monospace; font-size: 12px; margin-top: 8px; }
 
-/* ============ REGISTERED TEAMS LOBBY ============ */
-.teams-wrap-section { padding: 0 26px 20px; }
-
+/* ============================================================
+   REGISTERED TEAMS
+   ============================================================ */
 .teams-panel {
   background: var(--bg-panel);
   border: 1px solid var(--olive-light);
-  border-radius: 6px;
-  overflow: hidden;
+  border-radius: 6px; overflow: hidden;
 }
 .team-row {
-  display: flex; align-items: center; gap: 14px; padding: 12px 18px;
-  border-bottom: 1px solid var(--olive);
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 18px; border-bottom: 1px solid var(--olive);
+  transition: background .15s;
 }
 .team-row:last-child { border-bottom: none; }
+.team-row:hover { background: rgba(255,138,30,0.05); }
 .team-slot {
-  font-family: 'Black Ops One', sans-serif;
-  color: var(--amber);
-  font-size: 14px;
-  width: 32px;
+  font-family: 'Black Ops One', sans-serif; color: var(--amber); font-size: 14px; width: 34px;
 }
 .team-name {
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 700;
-  font-size: 16px;
-  color: var(--off-white);
-  text-transform: uppercase;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: 16px; color: var(--off-white); text-transform: uppercase;
 }
 .teams-empty, .teams-loading {
   padding: 24px; text-align: center; color: var(--dim);
   font-family: 'Share Tech Mono', monospace; font-size: 13px;
 }
 
-/* ============ FOOTER ============ */
+/* ============================================================
+   WINNERS
+   ============================================================ */
+.winners-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;
+}
+.winner-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--olive-light);
+  border-radius: 6px; padding: 20px;
+  position: relative; overflow: hidden;
+  transition: all .2s ease;
+}
+.winner-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--warn), transparent);
+}
+.winner-card:hover { border-color: var(--amber); transform: translateY(-4px); box-shadow: 0 12px 30px rgba(255,138,30,0.15); }
+.winner-crown {
+  position: absolute; top: 16px; right: 16px;
+  color: var(--warn); width: 26px; height: 26px; opacity: 0.8;
+}
+.winner-t-name { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 2px; }
+.winner-team { font-family: 'Black Ops One', sans-serif; font-size: 20px; color: var(--warn); margin: 6px 0 10px; }
+.winner-players { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 600; color: var(--off-white); display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.winner-players span { background: rgba(255,255,255,0.04); padding: 2px 8px; border-radius: 2px; border: 1px solid var(--olive-light); }
+.winner-quote { font-size: 14px; line-height: 1.5; color: var(--dim); border-top: 1px solid var(--olive); padding-top: 10px; margin-bottom: 10px; font-style: italic; }
+.winner-meta { display: flex; justify-content: space-between; font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 1px; color: var(--dim); }
+.winner-meta b { color: var(--amber); }
+
+/* ============================================================
+   FACEBOOK VIDEOS
+   ============================================================ */
+.video-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;
+}
+.video-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--olive-light);
+  border-radius: 6px; overflow: hidden;
+  transition: all .2s ease;
+}
+.video-card:hover { border-color: var(--amber); transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,0.4); }
+.video-frame-wrap {
+  position: relative; width: 100%; padding-top: 56.25%;
+  background: #000; border-bottom: 1px solid var(--olive-light);
+}
+.video-frame-wrap iframe {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
+}
+.video-info { padding: 14px 16px; }
+.video-info h4 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 16px; color: var(--off-white); margin-bottom: 4px; }
+.video-info p { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--dim); line-height: 1.5; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
 .footer {
-  text-align: center;
-  padding: 0 26px 30px;
+  text-align: center; padding: 20px 24px 40px;
   font-family: 'Share Tech Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 2px;
-  color: var(--dim);
-  text-transform: uppercase;
+  font-size: 11px; letter-spacing: 2px; color: var(--dim);
+  text-transform: uppercase; position: relative; z-index: 2;
 }
 .footer .squads { color: var(--danger); }
 
-@media(max-width: 640px) {
-  .poster-wrapper { border: none; box-shadow: none; }
-  .stats { grid-template-columns: repeat(2, 1fr); }
-  .reg-flow { grid-template-columns: 1fr; }
-  .field-row { grid-template-columns: 1fr; }
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width: 600px) {
+  .prize-stage { align-items: flex-end; }
+  .content-section { padding: 0 16px 24px; }
+  .register-banner { margin: 0 16px 24px; flex-direction: column; }
+  .register-banner .right { text-align: left; }
+  .inner { padding: 0 16px; }
 }
