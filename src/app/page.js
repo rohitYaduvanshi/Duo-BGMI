@@ -372,7 +372,7 @@ export default function Home() {
         </div>
         <div className="right">
           <div className="lbl">Contact / Register</div>
-          <div className="num">+91 93801 02402</div>
+          <div className="num">+91 8969099134</div>
         </div>
       </div>
 
