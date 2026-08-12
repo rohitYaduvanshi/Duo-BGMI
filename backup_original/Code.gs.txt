@@ -1,9 +1,10 @@
 /**
- * DS CLAN — BGMI Duo Tournament Registration Backend (v2)
+ * DS CLAN — BGMI Duo Tournament Registration Backend (v2.1)
  * ─────────────────────────────────────────────────────────
- * WHAT'S NEW IN v2:
- *  - Payment screenshots are uploaded to Google Drive automatically
- *  - A shareable Drive link is saved in the "Screenshot" column
+ * WHAT'S NEW IN v2.1:
+ *  - Automatic sheet fallback: If tab "Teams" is not found,
+ *    it automatically appends to the first sheet tab (getSheets()[0]).
+ *  - Payment screenshots are uploaded to Google Drive automatically.
  *
  * SHEET HEADERS (Row 1):
  *   A: Team Name
@@ -16,21 +17,22 @@
  *   H: Tournament
  *   I: Screenshot Link
  *   J: Timestamp
- *
- * DEPLOY STEPS:
- *  1. Go to your Google Sheet → Extensions → Apps Script
- *  2. Paste this entire file, replacing all existing code
- *  3. Click Deploy → New deployment → Web app
- *     - Execute as: Me
- *     - Who has access: Anyone
- *  4. Copy the Web app URL and paste in .env.local
  */
 
 const SHEET_NAME = "Teams";
 
+function getTargetSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.getSheets()[0];
+  }
+  return sheet;
+}
+
 // ── GET: Fetch registered team names ──────────────────────────────────
 function doGet(e) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const sheet = getTargetSheet();
   const data = sheet.getDataRange().getValues();
   const teams = [];
   for (let i = 1; i < data.length; i++) {
@@ -45,7 +47,7 @@ function doGet(e) {
 // ── POST: Register team + upload screenshot to Drive ──────────────────
 function doPost(e) {
   try {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    const sheet = getTargetSheet();
     const body = JSON.parse(e.postData.contents);
 
     // ── Screenshot Upload ────────────────────────────────────────────
@@ -53,7 +55,6 @@ function doPost(e) {
 
     if (body.screenshotBase64 && body.screenshotBase64.length > 0) {
       try {
-        // Strip the data-URL prefix if present: "data:image/jpeg;base64,..."
         const raw = body.screenshotBase64;
         const base64Only = raw.includes(",") ? raw.split(",")[1] : raw;
         const mimeType   = body.screenshotMime || "image/jpeg";
@@ -63,25 +64,23 @@ function doPost(e) {
         const decoded  = Utilities.base64Decode(base64Only);
         const blob     = Utilities.newBlob(decoded, mimeType, fileName);
 
-        // Save to Drive root (you can change to a specific folder if needed)
         const file = DriveApp.createFile(blob);
         file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
         screenshotUrl = file.getUrl();
       } catch (driveErr) {
-        // If Drive upload fails, continue without screenshot
-        screenshotUrl = "Upload failed: " + String(driveErr).slice(0, 80);
+        screenshotUrl = "Upload note: " + String(driveErr).slice(0, 80);
       }
     }
 
     // ── Append Row to Sheet ──────────────────────────────────────────
     sheet.appendRow([
-      body.teamName  || "",
-      body.p1Name    || "",
-      body.p1Uid     || "",
-      body.p2Name    || "",
-      body.p2Uid     || "",
-      body.whatsapp  || "",
-      body.utr       || "",
+      body.teamName   || "",
+      body.p1Name     || "",
+      body.p1Uid      || "",
+      body.p2Name     || "",
+      body.p2Uid      || "",
+      body.whatsapp   || "",
+      body.utr        || "",
       body.tournament || "",
       screenshotUrl,
       body.timestamp  || new Date().toISOString(),
