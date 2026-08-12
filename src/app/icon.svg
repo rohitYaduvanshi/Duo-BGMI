@@ -34,9 +34,10 @@
   <circle cx="256" cy="256" r="185" fill="#0d1109" stroke="#ff8a1e" stroke-width="2" opacity="0.95" />
   <circle cx="256" cy="256" r="185" fill="url(#innerGlow)" />
 
-  <!-- "DS" Bold Typography -->
-  <text x="256" y="285" font-family="'Arial Black', 'Impact', sans-serif" font-weight="900" font-size="160" fill="#eae6d6" text-anchor="middle" letter-spacing="4">DS</text>
+  <!-- "DS AXTERN" Typography -->
+  <text x="256" y="248" font-family="'Arial Black', 'Impact', sans-serif" font-weight="900" font-size="115" fill="#eae6d6" text-anchor="middle" letter-spacing="2">DS</text>
+  <text x="256" y="328" font-family="'Arial Black', 'Impact', sans-serif" font-weight="900" font-size="62" fill="#ff8a1e" text-anchor="middle" letter-spacing="3">AXTERN</text>
 
   <!-- Underline Accent Bar -->
-  <rect x="176" y="322" width="160" height="14" rx="7" fill="url(#ringGrad)" />
+  <rect x="186" y="352" width="140" height="10" rx="5" fill="url(#ringGrad)" />
 </svg>

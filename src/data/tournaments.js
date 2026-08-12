@@ -2,7 +2,7 @@ export const tournaments = [
   {
     id: "bgmi-duo-12-aug",
     title: "BGMI DUO TOURNAMENT",
-    eyebrow: "DS CLAN PRESENTS · Mobile Battle Royale",
+    eyebrow: "DS AXTERN PRESENTS · Mobile Battle Royale",
     subtitle: "Tournament Day · 12 August",
     tagline: "Drop in with your duo. 2 intense matches, one map — Erangel — and one squad walks away champions. Limited to 20 teams. Book your slot before the lobby fills.",
     date: "12 AUG",
@@ -38,7 +38,7 @@ export const tournaments = [
   {
     id: "bgmi-duo-weekly-clash",
     title: "WEEKLY DUO CLASH",
-    eyebrow: "DS CLAN · WEEKLY CHALLENGE",
+    eyebrow: "DS AXTERN · WEEKLY CHALLENGE",
     subtitle: "Upcoming · 19 August",
     tagline: "Prepare your strategy for the next week. New map configuration, same intense action. Register early to book your spot.",
     date: "19 AUG",

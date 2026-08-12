@@ -11,7 +11,7 @@ export const winners = [
   },
   {
     id: "winners-28-july",
-    tournamentName: "DS Clan Inaugural Cup",
+    tournamentName: "DS AXTERN Inaugural Cup",
     date: "28 July 2026",
     winningTeam: "SOUL REAPERS",
     players: ["Reaper_MAX", "Reaper_Deadly"],

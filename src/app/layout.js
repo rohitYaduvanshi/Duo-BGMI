@@ -1,10 +1,10 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "DS CLAN — BGMI Duo Tournament Portal",
-  description: "Official registration and tracking portal for DS Clan BGMI Duo tournaments. Book your slots, see live registered teams, prize pools, match timings, winners, and stream highlights.",
-  keywords: ["BGMI", "Tournament", "DS Clan", "Duo Tournament", "Esports", "Slot Booking", "Register"],
-  authors: [{ name: "DS Clan Admin" }],
+  title: "DS AXTERN — BGMI Duo Tournament Portal",
+  description: "Official registration and tracking portal for DS AXTERN BGMI Duo tournaments. Book your slots, see live registered teams, prize pools, match timings, winners, and stream highlights.",
+  keywords: ["BGMI", "Tournament", "DS AXTERN", "Duo Tournament", "Esports", "Slot Booking", "Register"],
+  authors: [{ name: "DS AXTERN Admin" }],
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

@@ -131,7 +131,7 @@ export default function Home() {
 
       {/* ── WARNING TAPE ── */}
       <div className="tape">
-        <span>DS Clan Presents &nbsp;•&nbsp; Duo Tournament &nbsp;•&nbsp; BGMI</span>
+        <span>DS AXTERN Presents &nbsp;•&nbsp; Duo Tournament &nbsp;•&nbsp; BGMI</span>
       </div>
 
       {/* ── HERO ── */}
@@ -176,7 +176,7 @@ export default function Home() {
           {/* Gun */}
           <path d="M140 90 L170 82 L175 84 L160 96 L148 110" />
           <path d="M155 85 L165 82" />
-          <rect x="142" y="92" width="12" height="6" />
+          <rect x="142" y="92" width="8" height="6" />
           {/* Hands on gun */}
           <path d="M140 90 L145 94" />
           {/* Legs */}
@@ -195,10 +195,10 @@ export default function Home() {
 
         {/* Badge */}
         <div className="badge-row">
-          <div className="badge"><span>DS</span></div>
+          <div className="badge"><span style={{ fontSize: "11px", letterSpacing: "1px", textAlign: "center", lineHeight: "1.1" }}>DS<br />AXTERN</span></div>
         </div>
 
-        <div className="eyebrow">DS Clan Mobile Battle Royale</div>
+        <div className="eyebrow">DS AXTERN Mobile Battle Royale</div>
 
         <div className="brand">BGMI <span className="hl">DUO</span></div>
         <div className="subline">Tournament <em>Day</em></div>
@@ -561,7 +561,7 @@ export default function Home() {
 
       {/* ── FOOTER ── */}
       <div className="footer">
-        Only <span className="squads">{selectedTournament.slots} Squads</span> Get In &nbsp;·&nbsp; Fair Play Only &nbsp;·&nbsp; DS Clan
+        Only <span className="squads">{selectedTournament.slots} Squads</span> Get In &nbsp;·&nbsp; Fair Play Only &nbsp;·&nbsp; DS AXTERN
       </div>
 
     </div>
